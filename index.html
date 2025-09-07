@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plateforme Consultants IT - Saveurs Maghrébines</title>
     <style>
-        /* [Vos styles existants] */
         * {
             margin: 0;
             padding: 0;
@@ -19,8 +18,591 @@
             min-height: 100vh;
         }
 
-        /* [Tous vos autres styles] */
-        /* ... (conservez tous vos styles existants) ... */
+        /* Navigation moderne */
+        .navbar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-stats {
+            display: flex;
+            gap: 30px;
+            font-size: 0.9em;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-number {
+            background: #00d4ff;
+            color: #0a0a1a;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .main-title {
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 0 50px rgba(0, 212, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Configuration Airtable */
+        .airtable-config {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .config-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+
+        .config-button {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            border: none;
+            color: #0a0a1a;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .config-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .config-button.secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+        }
+
+        /* Filtres avancés */
+        .filters-bar {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 0.9em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Grille des vignettes V2 */
+        .consultants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .consultant-card-v2 {
+            background: linear-gradient(145deg, 
+                rgba(255,255,255,0.12) 0%, 
+                rgba(255,255,255,0.08) 50%,
+                rgba(255,255,255,0.04) 100%);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .consultant-card-v2:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 
+                0 25px 60px rgba(0, 212, 255, 0.25),
+                0 0 80px rgba(0, 212, 255, 0.1);
+            border-color: #00d4ff;
+        }
+
+        .consultant-card-v2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(0, 212, 255, 0.08), 
+                transparent);
+            transition: all 0.8s ease;
+        }
+
+        .consultant-card-v2:hover::before {
+            left: 100%;
+        }
+
+        /* Header de la carte */
+        .card-header-v2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .consultant-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .consultant-id-v2 {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #0a0a1a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+
+        .consultant-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+        }
+
+        .stars {
+            color: #ffd700;
+        }
+
+        .availability-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .status-available {
+            background: #00ff88;
+            animation: pulse-green 2s infinite;
+        }
+
+        .status-busy {
+            background: #ffaa00;
+            animation: pulse-orange 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+        }
+
+        @keyframes pulse-orange {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 10px rgba(255, 170, 0, 0); }
+        }
+
+        /* Section principale du profil */
+        .profile-main {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .role-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .experience-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            border: 1px solid #00d4ff;
+            font-weight: 600;
+        }
+
+        /* Section compétences enrichie */
+        .skills-section {
+            margin: 25px 0;
+        }
+
+        .skills-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #00ff88;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tech-stack-v2 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tech-tag-v2 {
+            background: linear-gradient(45deg, rgba(255,107,107,0.15), rgba(255,217,61,0.15));
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 8px 14px;
+            border-radius: 18px;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tech-tag-v2:hover {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: #0a0a1a;
+            transform: scale(1.08);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .skill-level {
+            font-size: 0.7em;
+            margin-left: 5px;
+        }
+
+        /* Spécialités et points forts */
+        .specialties {
+            background: linear-gradient(145deg, 
+                rgba(0, 255, 136, 0.08), 
+                rgba(0, 212, 255, 0.08));
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .specialty-item {
+            margin: 10px 0;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .specialty-icon {
+            font-size: 1.2em;
+            width: 24px;
+        }
+
+        /* Détails en grille */
+        .details-grid-v2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .detail-item-v2 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px;
+            border-left: 3px solid #00d4ff;
+            transition: all 0.3s ease;
+        }
+
+        .detail-item-v2:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .detail-icon-v2 {
+            font-size: 1.1em;
+            width: 20px;
+            text-align: center;
+        }
+
+        .detail-text-v2 {
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        /* Bouton CTA amélioré */
+        .cta-button-v2 {
+            width: 100%;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            border: none;
+            color: white;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 1.05em;
+            font-weight: 700;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button-v2:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .cta-button-v2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.5s ease;
+        }
+
+        .cta-button-v2:hover::before {
+            left: 100%;
+        }
+
+        /* Badges premium */
+        .premium-badges {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .badge {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #0a0a1a;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .badge-hot {
+            background: linear-gradient(45deg, #ff4757, #ff6b6b);
+            color: white;
+        }
+
+        .badge-certified {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: #0a0a1a;
+        }
+
+        /* Notification système */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: #0a0a1a;
+            padding: 20px 25px;
+            border-radius: 16px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            transform: translateX(400px);
+            transition: all 0.5s ease;
+            z-index: 2000;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Configuration en cours */
+        .config-info {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .config-info h3 {
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        /* Debug info */
+        .debug-info {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .consultants-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters-bar {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-title {
+                font-size: 2em;
+            }
+            
+            .details-grid-v2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .airtable-config {
+                padding: 20px;
+            }
+            
+            .config-button {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+
+        /* Animation d'apparition */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #00d4ff;
+        }
+        
+        .loading-spinner {
+            border: 4px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #00d4ff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -57,8 +639,7 @@
         <div class="header-section">
             <h1 class="main-title">Consultants IT Premium</h1>
             <p class="subtitle">
-                Découvrez nos experts informatique triés sur le volet. 
-                Profils vérifiés pour vos projets tech.
+                Découvrez nos experts informatique triés sur le volet. Profils vérifiés pour vos projets tech.
             </p>
         </div>
 
@@ -76,7 +657,50 @@
 
         <!-- Filtres avancés -->
         <div class="filters-bar">
-            <!-- [Vos filtres existants] -->
+            <div class="filter-group">
+                <label class="filter-label">🔧 Stack Technique</label>
+                <select class="filter-select" id="stack-filter">
+                    <option value="all">Toutes les stacks</option>
+                    <option value="fullstack">Full Stack</option>
+                    <option value="frontend">Frontend</option>
+                    <option value="backend">Backend</option>
+                    <option value="devops">DevOps</option>
+                    <option value="mobile">Mobile</option>
+                    <option value="data">Data Science</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">⭐ Niveau</label>
+                <select class="filter-select" id="level-filter">
+                    <option value="all">Tous niveaux</option>
+                    <option value="junior">Junior (0-3 ans)</option>
+                    <option value="senior">Senior (3-7 ans)</option>
+                    <option value="expert">Expert (7+ ans)</option>
+                    <option value="architect">Architect/Lead</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">📍 Localisation</label>
+                <select class="filter-select" id="location-filter">
+                    <option value="all">Toutes régions</option>
+                    <option value="paris">Région Parisienne</option>
+                    <option value="lyon">Lyon</option>
+                    <option value="remote">Full Remote</option>
+                    <option value="hybrid">Hybride</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">⚡ Disponibilité</label>
+                <select class="filter-select" id="availability-filter">
+                    <option value="all">Toutes disponibilités</option>
+                    <option value="immediate">Immédiate</option>
+                    <option value="1month">Dans le mois</option>
+                    <option value="3months">Dans 3 mois</option>
+                </select>
+            </div>
         </div>
 
         <!-- Grille des consultants -->
@@ -260,6 +884,34 @@
                         contract: 'CDI/Freelance',
                         level: 'expert',
                         availability: 'Dans 1 mois'
+                    },
+                    {
+                        id: 'rec1357924680',
+                        name: 'Pierre Durand',
+                        position: 'Frontend Developer',
+                        experience: '4 ans',
+                        skills: ['Vue.js', 'TypeScript', 'Sass', 'Figma', 'Nuxt.js'],
+                        status: 'Disponible',
+                        location: 'Lyon',
+                        rate: '600€/jour',
+                        formation: 'BTS SIO - Développement',
+                        contract: 'Freelance',
+                        level: 'senior',
+                        availability: 'Immédiate'
+                    },
+                    {
+                        id: 'rec2468013579',
+                        name: 'Sophie Leblanc',
+                        position: 'Data Scientist Lead',
+                        experience: '12 ans',
+                        skills: ['Python', 'TensorFlow', 'Pandas', 'SQL', 'Apache Spark'],
+                        status: 'Disponible dans 1 mois',
+                        location: 'Hybride',
+                        rate: '950€/jour',
+                        formation: 'Doctorat en Machine Learning',
+                        contract: 'CDI',
+                        level: 'expert',
+                        availability: 'Dans 1 mois'
                     }
                 ]
             };
@@ -269,7 +921,6 @@
             updateDebugInfo();
         }
 
-        // [Les fonctions renderConsultants, updateStats, etc. restent identiques]
         // Fonction pour afficher les consultants
         function renderConsultants(consultants) {
             const container = document.getElementById('consultants-container');
@@ -369,6 +1020,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateDebugInfo();
             loadConsultantsFromAirtable();
+            
+            // Configurer les écouteurs d'événements pour les filtres
+            document.getElementById('stack-filter').addEventListener('change', filterConsultants);
+            document.getElementById('level-filter').addEventListener('change', filterConsultants);
+            document.getElementById('location-filter').addEventListener('change', filterConsultants);
+            document.getElementById('availability-filter').addEventListener('change', filterConsultants);
         });
 
         // Fonction de filtrage
