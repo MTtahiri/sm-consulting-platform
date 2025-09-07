@@ -95,8 +95,8 @@
             margin: 0 auto;
         }
 
-        /* Configuration Airtable */
-        .airtable-config {
+        /* Configuration GitHub */
+        .github-config {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255,255,255,0.3);
@@ -111,22 +111,6 @@
             font-weight: 700;
             color: #00d4ff;
             margin-bottom: 20px;
-        }
-
-        .config-input {
-            width: 100%;
-            max-width: 400px;
-            padding: 12px;
-            margin: 10px 0;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 10px;
-            color: white;
-            font-size: 0.9em;
-        }
-
-        .config-input::placeholder {
-            color: rgba(255,255,255,0.6);
         }
 
         .config-button {
@@ -563,7 +547,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .airtable-config {
+            .github-config {
                 padding: 20px;
             }
             
@@ -636,9 +620,9 @@
     <div class="container">
         <!-- Configuration info -->
         <div class="config-info">
-            <h3>🔧 Configuration Airtable détectée</h3>
-            <p>Connexion automatique en cours avec votre base de données...</p>
-            <div id="connection-status">⏳ Test de connexion...</div>
+            <h3>🔧 Configuration GitHub détectée</h3>
+            <p>Chargement des données depuis GitHub...</p>
+            <div id="connection-status">⏳ Connexion en cours...</div>
         </div>
 
         <!-- Header -->
@@ -648,6 +632,15 @@
                 Découvrez nos experts informatique triés sur le volet. 
                 Profils anonymisés et vérifiés pour vos projets tech.
             </p>
+        </div>
+
+        <!-- Configuration GitHub -->
+        <div class="github-config">
+            <h3 class="config-title">📁 Source de données GitHub</h3>
+            <p>Les données sont chargées depuis un référentiel GitHub public</p>
+            <button class="config-button" onclick="loadConsultantsFromGitHub()">
+                🔄 Actualiser les données
+            </button>
         </div>
 
         <!-- Filtres avancés -->
@@ -702,7 +695,7 @@
         <div class="consultants-grid" id="consultants-container">
             <div class="loading">
                 <div class="loading-spinner"></div>
-                <p>Chargement des consultants depuis Airtable...</p>
+                <p>Chargement des consultants depuis GitHub...</p>
             </div>
         </div>
 
@@ -719,11 +712,11 @@
     </div>
 
     <script>
-        // Configuration Airtable avec les variables d'environnement
-        const AIRTABLE_CONFIG = {
-            apiKey: 'patHYZ2su8okAfrfy.e7b6b05aead9582fd7df1ec361e8d946fc34f7f764916a95ae4c5fba970fc92b',
-            baseId: 'app8ULorqd7kPziBM',
-            tableName: 'Candidats'
+        // Configuration GitHub
+        const GITHUB_CONFIG = {
+            username: 'VOTRE_NOM_UTILISATEUR', // À REMPLACER
+            repo: 'consultants-data',
+            filePath: 'consultants.json'
         };
 
         // Variables globales pour le debug
@@ -739,123 +732,288 @@
         function updateDebugInfo() {
             const debugContent = document.getElementById('debug-content');
             debugContent.innerHTML = `
-                <strong>Configuration :</strong><br>
-                • Base ID: ${AIRTABLE_CONFIG.baseId}<br>
-                • Table: ${AIRTABLE_CONFIG.tableName}<br>
-                • API Key: ${AIRTABLE_CONFIG.apiKey ? AIRTABLE_CONFIG.apiKey.substring(0, 15) + '...' : 'Non configurée'}<br>
-                • URL API: ${debugInfo.apiUrl}<br><br>
+                <strong>Configuration GitHub :</strong><br>
+                • Utilisateur: ${GITHUB_CONFIG.username}<br>
+                • Repository: ${GITHUB_CONFIG.repo}<br>
+                • Fichier: ${GITHUB_CONFIG.filePath}<br><br>
                 
                 <strong>État de la connexion :</strong><br>
                 • Test de connexion: ${debugInfo.connectionTest || 'En cours...'}<br>
-                • Enregistrements trouvés: ${debugInfo.recordsFound}<br>
+                • Consultants trouvés: ${debugInfo.recordsFound}<br>
                 • Dernière erreur: ${debugInfo.lastError || 'Aucune'}<br><br>
                 
                 <strong>Timestamp:</strong> ${new Date().toLocaleString()}
             `;
         }
 
-        // Générer des données de test étendues pour la démonstration
-        function generateExtendedTestData() {
-            const testProfiles = [
-                {
-                    id: 'rec1234567890',
-                    fields: {
-                        Prenom: 'Jean',
-                        Nom: 'Dupont',
-                        Poste: 'Développeur Full Stack Senior',
-                        Experience: '8 ans',
-                        Competences: 'React, Node.js, MongoDB, Docker, AWS',
-                        Statut: 'Disponible',
-                        Localisation: 'Paris',
-                        TJM_Souhaite: '750€/jour',
-                        Formation: 'Master Informatique - EPITA',
-                        Type_Contrat: 'Freelance',
-                        Niveau: 'senior'
+        // Fonction pour afficher une notification
+        function showNotification(message, duration = 3000) {
+            const notification = document.getElementById('notification');
+            const content = document.getElementById('notification-content');
+            
+            content.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        // Fonction pour récupérer les consultants depuis GitHub
+        async function loadConsultantsFromGitHub() {
+            try {
+                document.getElementById('connection-status').textContent = '⏳ Connexion en cours...';
+                document.getElementById('consultants-container').innerHTML = `
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Chargement des consultants depuis GitHub...</p>
+                    </div>
+                `;
+
+                // Construction de l'URL GitHub
+                const githubUrl = `https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.filePath}`;
+                debugInfo.apiUrl = githubUrl;
+                
+                const response = await fetch(githubUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Décoder le contenu base64
+                const content = JSON.parse(atob(data.content));
+                
+                // Mise à jour des informations de debug
+                debugInfo.connectionTest = 'Réussi';
+                debugInfo.recordsFound = content.consultants ? content.consultants.length : 0;
+                updateDebugInfo();
+                
+                // Afficher les consultants
+                renderConsultants(content.consultants);
+                showNotification('✅ Données chargées avec succès depuis GitHub');
+                
+            } catch (error) {
+                console.error('Erreur de chargement:', error);
+                debugInfo.lastError = error.message;
+                debugInfo.connectionTest = 'Échec';
+                updateDebugInfo();
+                
+                // Solution de secours - données locales
+                loadLocalConsultants();
+                showNotification('⚠️ Chargement depuis GitHub échoué. Utilisation des données locales.');
+            }
+        }
+
+        // Fonction de secours avec données locales
+        function loadLocalConsultants() {
+            const localData = {
+                consultants: [
+                    {
+                        id: 'rec1234567890',
+                        name: 'Jean Dupont',
+                        position: 'Développeur Full Stack Senior',
+                        experience: '8 ans',
+                        skills: ['React', 'Node.js', 'MongoDB', 'Docker', 'AWS'],
+                        status: 'Disponible',
+                        location: 'Paris',
+                        rate: '750€/jour',
+                        formation: 'Master Informatique - EPITA',
+                        contract: 'Freelance',
+                        level: 'senior',
+                        availability: 'Immédiate'
+                    },
+                    {
+                        id: 'rec0987654321',
+                        name: 'Marie Martin',
+                        position: 'DevOps Architect',
+                        experience: '10 ans',
+                        skills: ['AWS', 'Kubernetes', 'Terraform', 'Jenkins', 'GitLab CI'],
+                        status: 'En mission',
+                        location: 'Remote',
+                        rate: '900€/jour',
+                        formation: 'École d\'ingénieur - CentraleSupélec',
+                        contract: 'CDI/Freelance',
+                        level: 'expert',
+                        availability: 'Dans 1 mois'
+                    },
+                    {
+                        id: 'rec1357924680',
+                        name: 'Pierre Durand',
+                        position: 'Frontend Developer',
+                        experience: '4 ans',
+                        skills: ['Vue.js', 'TypeScript', 'Sass', 'Figma', 'Nuxt.js'],
+                        status: 'Disponible',
+                        location: 'Lyon',
+                        rate: '600€/jour',
+                        formation: 'BTS SIO - Développement',
+                        contract: 'Freelance',
+                        level: 'senior',
+                        availability: 'Immédiate'
+                    },
+                    {
+                        id: 'rec2468013579',
+                        name: 'Sophie Leblanc',
+                        position: 'Data Scientist Lead',
+                        experience: '12 ans',
+                        skills: ['Python', 'TensorFlow', 'Pandas', 'SQL', 'Apache Spark'],
+                        status: 'Disponible dans 1 mois',
+                        location: 'Hybride',
+                        rate: '950€/jour',
+                        formation: 'Doctorat en Machine Learning',
+                        contract: 'CDI',
+                        level: 'expert',
+                        availability: 'Dans 1 mois'
+                    },
+                    {
+                        id: 'rec9876543210',
+                        name: 'Thomas Rousseau',
+                        position: 'Mobile Developer',
+                        experience: '5 ans',
+                        skills: ['Flutter', 'React Native', 'Firebase', 'Swift'],
+                        status: 'Disponible',
+                        location: 'Remote',
+                        rate: '650€/jour',
+                        formation: 'Master Développement Mobile',
+                        contract: 'Freelance',
+                        level: 'senior',
+                        availability: 'Immédiate'
+                    },
+                    {
+                        id: 'rec5432167890',
+                        name: 'Amélie Moreau',
+                        position: 'Backend Developer',
+                        experience: '6 ans',
+                        skills: ['Java', 'Spring Boot', 'PostgreSQL', 'Redis'],
+                        status: 'Disponible',
+                        location: 'Paris',
+                        rate: '700€/jour',
+                        formation: 'Master en Génie Logiciel',
+                        contract: 'CDI/Freelance',
+                        level: 'senior',
+                        availability: 'Immédiate'
                     }
-                },
-                {
-                    id: 'rec0987654321',
-                    fields: {
-                        Prenom: 'Marie',
-                        Nom: 'Martin',
-                        Poste: 'DevOps Architect',
-                        Experience: '10 ans',
-                        Competences: 'AWS, Kubernetes, Terraform, Jenkins, GitLab CI',
-                        Statut: 'En mission',
-                        Localisation: 'Remote',
-                        TJM_Souhaite: '900€/jour',
-                        Formation: 'École d\'ingénieur - CentraleSupélec',
-                        Type_Contrat: 'CDI/Freelance',
-                        Niveau: 'expert'
-                    }
-                },
-                {
-                    id: 'rec1357924680',
-                    fields: {
-                        Prenom: 'Pierre',
-                        Nom: 'Durand',
-                        Poste: 'Frontend Developer',
-                        Experience: '4 ans',
-                        Competences: 'Vue.js, TypeScript, Sass, Figma, Nuxt.js',
-                        Statut: 'Disponible',
-                        Localisation: 'Lyon',
-                        TJM_Souhaite: '600€/jour',
-                        Formation: 'BTS SIO - Développement',
-                        Type_Contrat: 'Freelance',
-                        Niveau: 'senior'
-                    }
-                },
-                {
-                    id: 'rec2468013579',
-                    fields: {
-                        Prenom: 'Sophie',
-                        Nom: 'Leblanc',
-                        Poste: 'Data Scientist Lead',
-                        Experience: '12 ans',
-                        Competences: 'Python, TensorFlow, Pandas, SQL, Apache Spark',
-                        Statut: 'Disponible dans 1 mois',
-                        Localisation: 'Hybride',
-                        TJM_Souhaite: '950€/jour',
-                        Formation: 'Doctorat en Machine Learning',
-                        Type_Contrat: 'CDI',
-                        Niveau: 'expert'
-                    }
-                },
-                {
-                    id: 'rec9876543210',
-                    fields: {
-                        Prenom: 'Thomas',
-                        Nom: 'Rousseau',
-                        Poste: 'Mobile Developer',
-                        Experience: '5 ans',
-                        Competences: 'Flutter, React Native, Firebase, Swift',
-                        Statut: 'Disponible',
-                        Localisation: 'Remote',
-                        TJM_Souhaite: '650€/jour',
-                        Formation: 'Master Développement Mobile',
-                        Type_Contrat: 'Freelance',
-                        Niveau: 'senior'
-                    }
-                },
-                {
-                    id: 'rec5432167890',
-                    fields: {
-                        Prenom: 'Amélie',
-                        Nom: 'Moreau',
-                        Poste: 'Backend Developer',
-                        Experience: '6 ans',
-                        Competences: 'Java, Spring Boot, PostgreSQL, Redis',
-                        Statut: 'Disponible',
-                        Localisation: 'Paris',
-                        TJM_Souhaite: '700€/jour',
-                        Formation: 'Master en Génie Logiciel',
-                        Type_Contrat: 'CDI/Freelance',
-                        Niveau: 'senior'
-                    }
-                },
-                {
-                    id: 'rec6789012345',
-                    fields: {
-                        Prenom: 'Lucas',
-                        Nom: 'Bernard',
-                        Poste: 'Développ
+                ]
+            };
+            
+            renderConsultants(localData.consultants);
+            debugInfo.recordsFound = localData.consultants.length;
+            updateDebugInfo();
+        }
+
+        // Fonction pour afficher les consultants
+        function renderConsultants(consultants) {
+            const container = document.getElementById('consultants-container');
+            
+            if (!consultants || consultants.length === 0) {
+                container.innerHTML = `
+                    <div class="config-info">
+                        <h3>❌ Aucun consultant trouvé</h3>
+                        <p>Vérifiez votre configuration GitHub ou ajoutez des données locales.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Mettre à jour les statistiques
+            updateStats(consultants);
+            
+            // Générer les cartes de consultants
+            container.innerHTML = '';
+            
+            consultants.forEach((consultant, index) => {
+                const availabilityClass = consultant.status === 'Disponible' ? 'status-available' : 'status-busy';
+                const availabilityText = consultant.status === 'Disponible' ? 'Disponible' : 'En mission';
+                
+                // Créer des tags de compétences
+                const skillsHTML = consultant.skills.map(skill => 
+                    `<div class="tech-tag-v2">${skill}</div>`
+                ).join('');
+                
+                const cardHTML = `
+                    <div class="consultant-card-v2 fade-in" style="animation-delay: ${index * 0.1}s">
+                        <div class="card-header-v2">
+                            <div class="consultant-info">
+                                <div class="consultant-id-v2">#${consultant.id}</div>
+                                <div class="consultant-rating">
+                                    <span class="stars">★★★★★</span>
+                                    <span>4.9/5</span>
+                                </div>
+                            </div>
+                            <div class="availability-status">
+                                <span>${availabilityText}</span>
+                                <div class="status-indicator ${availabilityClass}"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-main">
+                            <h2 class="role-title">${consultant.position}</h2>
+                            <div class="experience-badge">
+                                <span>${consultant.experience} d'expérience</span>
+                            </div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <h3 class="skills-title">🛠️ Stack Technique</h3>
+                            <div class="tech-stack-v2">
+                                ${skillsHTML}
+                            </div>
+                        </div>
+                        
+                        <div class="details-grid-v2">
+                            <div class="detail-item-v2">
+                                <span class="detail-icon-v2">📍</span>
+                                <span class="detail-text-v2">${consultant.location}</span>
+                            </div>
+                            <div class="detail-item-v2">
+                                <span class="detail-icon-v2">💰</span>
+                                <span class="detail-text-v2">${consultant.rate}</span>
+                            </div>
+                            <div class="detail-item-v2">
+                                <span class="detail-icon-v2">🎓</span>
+                                <span class="detail-text-v2">${consultant.formation}</span>
+                            </div>
+                            <div class="detail-item-v2">
+                                <span class="detail-icon-v2">📋</span>
+                                <span class="detail-text-v2">${consultant.contract}</span>
+                            </div>
+                        </div>
+                        
+                        <button class="cta-button-v2">📞 Contacter ce consultant</button>
+                    </div>
+                `;
+                
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // Fonction pour mettre à jour les statistiques
+        function updateStats(consultants) {
+            const availableNow = consultants.filter(c => c.status === 'Disponible').length;
+            
+            document.getElementById('active-consultants').textContent = consultants.length;
+            document.getElementById('available-now').textContent = availableNow;
+            document.getElementById('missions-month').textContent = Math.floor(consultants.length * 0.7); // Estimation
+        }
+
+        // Chargement au démarrage
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugInfo();
+            loadConsultantsFromGitHub();
+            
+            // Configurer les écouteurs d'événements pour les filtres
+            document.getElementById('stack-filter').addEventListener('change', filterConsultants);
+            document.getElementById('level-filter').addEventListener('change', filterConsultants);
+            document.getElementById('location-filter').addEventListener('change', filterConsultants);
+            document.getElementById('availability-filter').addEventListener('change', filterConsultants);
+        });
+
+        // Fonction de filtrage (à implémenter)
+        function filterConsultants() {
+            // Cette fonction filtrerait les consultants en fonction des sélections
+            showNotification('🔧 Filtrage en cours de développement');
+        }
+    </script>
+</body>
+</html>
