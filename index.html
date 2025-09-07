@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme Consultants IT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #60a5fa, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            min-width: 200px;
+        }
+        
+        .consultants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .consultant-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .consultant-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .consultant-name {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #60a5fa;
+        }
+        
+        .consultant-position {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .consultant-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 15px 0;
+        }
+        
+        .skill-tag {
+            background: rgba(96, 165, 250, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid #60a5fa;
+        }
+        
+        .consultant-details {
+            margin: 15px 0;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+        
+        .contact-button {
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 15px;
+            transition: opacity 0.3s ease;
+        }
+        
+        .contact-button:hover {
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 10px;
+            border: 1px solid #ff6b6b;
+        }
+        
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+            }
+            
+            .filter-select {
+                width: 100%;
+            }
+            
+            .consultants-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Consultants IT Experts</h1>
+            <p class="subtitle">Découvrez nos profils hautement qualifiés pour vos projets</p>
+        </header>
+
+        <div class="filters">
+            <select class="filter-select" id="location-filter">
+                <option value="">📍 Toutes les localisations</option>
+                <option value="Paris">Paris</option>
+                <option value="Lyon">Lyon</option>
+                <option value="Remote">Remote</option>
+            </select>
+            
+            <select class="filter-select" id="skills-filter">
+                <option value="">🛠️ Toutes les compétences</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="React">React</option>
+                <option value="Node.js">Node.js</option>
+                <option value="AWS">AWS</option>
+                <option value="Docker">Docker</option>
+                <option value="Python">Python</option>
+            </select>
+            
+            <select class="filter-select" id="availability-filter">
+                <option value="">📅 Toutes disponibilités</option>
+                <option value="Immédiate">Immédiate</option>
+                <option value="2 semaines">2 semaines</option>
+                <option value="1 mois">1 mois</option>
+            </select>
+        </div>
+
+        <div id="consultants-container">
+            <div class="loading">Chargement des consultants...</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration GitHub - À MODIFIER AVEC VOS INFOS
+        const GITHUB_CONFIG = {
+            username: 'votrenomutilisateur', // Remplacez par votre nom d'utilisateur GitHub
+            repo: 'consultants-data',        // Remplacez si votre dépôt a un autre nom
+            filepath: 'consultants.json'     // Remplacez si votre fichier a un autre nom
+        };
+
+        let allConsultants = [];
+
+        // Charger les données depuis GitHub
+        async function loadConsultants() {
+            const container = document.getElementById('consultants-container');
+            
+            try {
+                container.innerHTML = '<div class="loading">📡 Connexion à GitHub...</div>';
+                
+                const response = await fetch(
+                    `https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.filepath}`
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur GitHub ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const content = JSON.parse(atob(data.content));
+                allConsultants = content.consultants;
+                
+                renderConsultants(allConsultants);
+                setupFilters();
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Erreur de chargement</h3>
+                        <p>Impossible de charger les données depuis GitHub.</p>
+                        <p><small>${error.message}</small></p>
+                        <button onclick="loadConsultants()" style="margin-top: 15px; padding: 10px 20px;">🔄 Réessayer</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Afficher les consultants
+        function renderConsultants(consultants) {
+            const container = document.getElementById('consultants-container');
+            
+            if (!consultants || consultants.length === 0) {
+                container.innerHTML = '<div class="error">Aucun consultant trouvé.</div>';
+                return;
+            }
+            
+            container.innerHTML = consultants.map(consultant => `
+                <div class="consultant-card">
+                    <h2 class="consultant-name">${consultant.name}</h2>
+                    <p class="consultant-position">${consultant.position} • ${consultant.experience}</p>
+                    
+                    <div class="consultant-details">
+                        <div class="detail-item">
+                            <span>📍</span> ${consultant.location}
+                        </div>
+                        <div class="detail-item">
+                            <span>💰</span> ${consultant.rate}
+                        </div>
+                        <div class="detail-item">
+                            <span>📅</span> Disponibilité: ${consultant.availability}
+                        </div>
+                    </div>
+                    
+                    <p>${consultant.description}</p>
+                    
+                    <div class="consultant-skills">
+                        ${consultant.skills.map(skill => `
+                            <span class="skill-tag">${skill}</span>
+                        `).join('')}
+                    </div>
+                    
+                    <button class="contact-button" onclick="contactConsultant('${consultant.email}')">
+                        📧 Contacter ${consultant.name}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Configurer les filtres
+        function setupFilters() {
+            const filters = ['location', 'skills', 'availability'];
+            
+            filters.forEach(filterType => {
+                const filter = document.getElementById(`${filterType}-filter`);
+                filter.addEventListener('change', applyFilters);
+            });
+        }
+
+        // Appliquer les filtres
+        function applyFilters() {
+            const locationFilter = document.getElementById('location-filter').value;
+            const skillsFilter = document.getElementById('skills-filter').value;
+            const availabilityFilter = document.getElementById('availability-filter').value;
+            
+            let filtered = allConsultants;
+            
+            if (locationFilter) {
+                filtered = filtered.filter(c => c.location === locationFilter);
+            }
+            
+            if (skillsFilter) {
+                filtered = filtered.filter(c => c.skills.includes(skillsFilter));
+            }
+            
+            if (availabilityFilter) {
+                filtered = filtered.filter(c => c.availability === availabilityFilter);
+            }
+            
+            renderConsultants(filtered);
+        }
+
+        // Contacter un consultant
+        function contactConsultant(email) {
+            window.location.href = `mailto:${email}?subject=Contact%20depuis%20la%20plateforme%20consultants&body=Bonjour,%0A%0AJ'ai%20vu%20votre%20profil%20sur%20la%20plateforme%20et%20je%20suis%20intéressé(e)%20par%20vos%20compétences.`;
+        }
+
+        // Charger au démarrage
+        document.addEventListener('DOMContentLoaded', loadConsultants);
+    </script>
+</body>
+</html>
