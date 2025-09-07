@@ -125,10 +125,16 @@ export default async function handler(req, res) {
 // Variables d'environnement à configurer sur Vercel :
 /*
 AIRTABLE_API_KEY=pathXG85b7P96CnjE.8fe40141abdb308305bfb43100855b821751c55e38edf0680bce3a9d19243235
-AIRTABLE_BASE_ID=app8ULorqd7kPziBM
+AIRTABLE_BASE_ID=appNwg9iP8ub0cDCn (CORRIGÉ avec la vraie Base ID)
 AIRTABLE_TABLE_NAME=Candidats
 
-Structure de votre onglet "Candidats" :
+Informations extraites de votre lien :
+- Base: Base_Candidats_Master_2025
+- Base ID: appNwg9iP8ub0cDCn  
+- Table ID: tblB2QFKXVKeJPNg1
+- Vue: viwTq4UJ2rGF8yGbn
+
+Structure des colonnes :
 Nom, Courriel, Telephone, Role, Experience, Localisation, Certifications, 
 Competences, Stack, Specialites, Niveau, Disponibilite, Date_Ajout, 
 TypeContrat, Disponible, TJM, Reviews, Rating
