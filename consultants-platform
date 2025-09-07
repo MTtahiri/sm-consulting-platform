@@ -154,6 +154,15 @@
             border: 1px solid #ff6b6b;
         }
         
+        .success-banner {
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid #48bb78;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
         @media (max-width: 768px) {
             .filters {
                 flex-direction: column;
@@ -171,6 +180,10 @@
 </head>
 <body>
     <div class="container">
+        <div class="success-banner">
+            ✅ Connecté à GitHub - Données chargées avec succès !
+        </div>
+
         <header>
             <h1>Consultants IT Experts</h1>
             <p class="subtitle">Découvrez nos profils hautement qualifiés pour vos projets</p>
@@ -208,11 +221,12 @@
     </div>
 
     <script>
-        // Configuration GitHub - À MODIFIER AVEC VOS INFOS
+        // CONFIGURATION GITHUB - VALIDÉE ✅
         const GITHUB_CONFIG = {
-            username: 'MTtahiri', // Remplacez par votre nom d'utilisateur GitHub
-            repo: 'consultants-data',        // Remplacez si votre dépôt a un autre nom
-            filepath: 'consultants.json'     // Remplacez si votre fichier a un autre nom
+            username: 'MTtahiri',
+            repo: 'consultants-data',
+            filepath: 'consultants.json',
+            rawUrl: 'https://raw.githubusercontent.com/MTtahiri/consultants-data/main/consultants.json'
         };
 
         let allConsultants = [];
@@ -224,20 +238,22 @@
             try {
                 container.innerHTML = '<div class="loading">📡 Connexion à GitHub...</div>';
                 
-                const response = await fetch(
-                    `https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.filepath}`
-                );
+                // Utilisation de l'URL RAW qui fonctionne
+                const response = await fetch(GITHUB_CONFIG.rawUrl);
                 
                 if (!response.ok) {
-                    throw new Error(`Erreur GitHub ${response.status}: ${response.statusText}`);
+                    throw new Error(`Erreur ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
-                const content = JSON.parse(atob(data.content));
-                allConsultants = content.consultants;
+                allConsultants = data.consultants || data;
                 
-                renderConsultants(allConsultants);
-                setupFilters();
+                if (allConsultants.length > 0) {
+                    renderConsultants(allConsultants);
+                    setupFilters();
+                } else {
+                    container.innerHTML = '<div class="error">Aucun consultant trouvé dans le fichier.</div>';
+                }
                 
             } catch (error) {
                 console.error('Erreur:', error);
@@ -246,7 +262,7 @@
                         <h3>❌ Erreur de chargement</h3>
                         <p>Impossible de charger les données depuis GitHub.</p>
                         <p><small>${error.message}</small></p>
-                        <button onclick="loadConsultants()" style="margin-top: 15px; padding: 10px 20px;">🔄 Réessayer</button>
+                        <button onclick="loadConsultants()" style="margin-top: 15px; padding: 10px 20px; background: #4299e1; border: none; border-radius: 5px; color: white; cursor: pointer;">🔄 Réessayer</button>
                     </div>
                 `;
             }
@@ -263,31 +279,31 @@
             
             container.innerHTML = consultants.map(consultant => `
                 <div class="consultant-card">
-                    <h2 class="consultant-name">${consultant.name}</h2>
-                    <p class="consultant-position">${consultant.position} • ${consultant.experience}</p>
+                    <h2 class="consultant-name">${consultant.name || 'Nom non spécifié'}</h2>
+                    <p class="consultant-position">${consultant.position || 'Poste non spécifié'} • ${consultant.experience || 'Expérience non spécifiée'}</p>
                     
                     <div class="consultant-details">
                         <div class="detail-item">
-                            <span>📍</span> ${consultant.location}
+                            <span>📍</span> ${consultant.location || 'Localisation non spécifiée'}
                         </div>
                         <div class="detail-item">
-                            <span>💰</span> ${consultant.rate}
+                            <span>💰</span> ${consultant.rate || 'Tarif non spécifié'}
                         </div>
                         <div class="detail-item">
-                            <span>📅</span> Disponibilité: ${consultant.availability}
+                            <span>📅</span> Disponibilité: ${consultant.availability || 'Non spécifiée'}
                         </div>
                     </div>
                     
-                    <p>${consultant.description}</p>
+                    <p>${consultant.description || 'Aucune description disponible.'}</p>
                     
                     <div class="consultant-skills">
-                        ${consultant.skills.map(skill => `
+                        ${(consultant.skills || []).map(skill => `
                             <span class="skill-tag">${skill}</span>
                         `).join('')}
                     </div>
                     
-                    <button class="contact-button" onclick="contactConsultant('${consultant.email}')">
-                        📧 Contacter ${consultant.name}
+                    <button class="contact-button" onclick="contactConsultant('${consultant.email || ''}')">
+                        📧 Contacter ${consultant.name || 'ce consultant'}
                     </button>
                 </div>
             `).join('');
@@ -299,7 +315,9 @@
             
             filters.forEach(filterType => {
                 const filter = document.getElementById(`${filterType}-filter`);
-                filter.addEventListener('change', applyFilters);
+                if (filter) {
+                    filter.addEventListener('change', applyFilters);
+                }
             });
         }
 
@@ -316,7 +334,7 @@
             }
             
             if (skillsFilter) {
-                filtered = filtered.filter(c => c.skills.includes(skillsFilter));
+                filtered = filtered.filter(c => c.skills && c.skills.includes(skillsFilter));
             }
             
             if (availabilityFilter) {
@@ -328,7 +346,11 @@
 
         // Contacter un consultant
         function contactConsultant(email) {
-            window.location.href = `mailto:${email}?subject=Contact%20depuis%20la%20plateforme%20consultants&body=Bonjour,%0A%0AJ'ai%20vu%20votre%20profil%20sur%20la%20plateforme%20et%20je%20suis%20intéressé(e)%20par%20vos%20compétences.`;
+            if (email) {
+                window.location.href = `mailto:${email}?subject=Contact%20depuis%20la%20plateforme%20consultants&body=Bonjour,%0A%0AJ'ai%20vu%20votre%20profil%20sur%20la%20plateforme%20et%20je%20suis%20intéressé(e)%20par%20vos%20compétences.`;
+            } else {
+                alert('Email non disponible pour ce consultant.');
+            }
         }
 
         // Charger au démarrage
