@@ -1,0 +1,26 @@
+{
+  "consultants": [
+    {
+      "id": "1",
+      "name": "Jean Martin",
+      "position": "Développeur Fullstack",
+      "experience": "5 ans",
+      "skills": ["JavaScript", "React", "Node.js"],
+      "availability": "immédiate",
+      "location": "Paris",
+      "rate": "550-750€/jour",
+      "email": "jean.martin@exemple.com"
+    },
+    {
+      "id": "2", 
+      "name": "Marie Lambert",
+      "position": "DevOps Engineer",
+      "experience": "7 ans",
+      "skills": ["AWS", "Docker", "Kubernetes"],
+      "availability": "2 semaines",
+      "location": "Lyon",
+      "rate": "650-850€/jour",
+      "email": "marie.lambert@exemple.com"
+    }
+  ]
+}
