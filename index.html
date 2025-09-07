@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plateforme Consultants IT - Saveurs Maghrébines</title>
+    <title>Plateforme Consultants IT - SM Consulting</title>
     <style>
         * {
             margin: 0;
@@ -639,14 +639,14 @@
         <div class="header-section">
             <h1 class="main-title">Consultants IT Premium</h1>
             <p class="subtitle">
-                Découvrez nos experts informatique triés sur le volet. Profils vérifiés pour vos projets tech.
+                La solution humaine pour trouver vos talents informatiques qualifiés et anonymes
             </p>
         </div>
 
         <!-- Configuration Airtable -->
         <div class="airtable-config">
             <h3 class="config-title">📊 Source de données Airtable</h3>
-            <p>Les données sont chargées depuis votre base Airtable</p>
+            <p>Les données sont chargées depuis votre base Airtable via API sécurisée</p>
             <button class="config-button" onclick="loadConsultantsFromAirtable()">
                 🔄 Actualiser depuis Airtable
             </button>
@@ -724,12 +724,8 @@
     </div>
 
     <script>
-        // Configuration Airtable - Utilise les variables d'environnement Vercel
-        const AIRTABLE_CONFIG = {
-            apiKey: typeof process !== 'undefined' && process.env ? process.env.AIRTABLE_API_KEY : '',
-            baseId: typeof process !== 'undefined' && process.env ? process.env.AIRTABLE_BASE_ID : 'app8ULorqd7kPziBM',
-            tableName: typeof process !== 'undefined' && process.env ? process.env.AIRTABLE_TABLE_NAME : 'Candidats'
-        };
+        // Configuration API
+        const API_URL = '/api/airtable';
 
         // Variables globales pour le debug
         let debugInfo = {
@@ -737,19 +733,18 @@
             connectionTest: null,
             recordsFound: 0,
             lastError: null,
-            apiUrl: ''
+            apiUrl: API_URL
         };
 
         // Fonction de debug améliorée
         function updateDebugInfo() {
             const debugContent = document.getElementById('debug-content');
-            const hasAirtableKey = AIRTABLE_CONFIG.apiKey && AIRTABLE_CONFIG.apiKey.length > 0;
             
             debugContent.innerHTML = `
-                <strong>Configuration Airtable :</strong><br>
-                • Base ID: ${AIRTABLE_CONFIG.baseId}<br>
-                • Table: ${AIRTABLE_CONFIG.tableName}<br>
-                • API Key: ${hasAirtableKey ? 'Configurée ✓' : 'Non configurée ✗'}<br><br>
+                <strong>Configuration API :</strong><br>
+                • Endpoint: ${API_URL}<br>
+                • Base ID: app8ULorqd7kPziBM<br>
+                • Table: Candidats<br><br>
                 
                 <strong>État de la connexion :</strong><br>
                 • Test de connexion: ${debugInfo.connectionTest || 'En cours...'}<br>
@@ -773,7 +768,7 @@
             }, duration);
         }
 
-        // Fonction pour récupérer les consultants depuis Airtable
+        // Fonction pour récupérer les consultants depuis notre API
         async function loadConsultantsFromAirtable() {
             try {
                 document.getElementById('connection-status').textContent = '⏳ Connexion à Airtable...';
@@ -784,24 +779,11 @@
                     </div>
                 `;
 
-                // Vérifier si la clé API est configurée
-                if (!AIRTABLE_CONFIG.apiKey || AIRTABLE_CONFIG.apiKey.length < 10) {
-                    throw new Error('Clé API Airtable non configurée. Vérifiez les variables d\'environnement sur Vercel.');
-                }
-
-                // Construction de l'URL Airtable
-                const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${encodeURIComponent(AIRTABLE_CONFIG.tableName)}`;
-                debugInfo.apiUrl = airtableUrl;
-                
-                const response = await fetch(airtableUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`
-                    }
-                });
+                const response = await fetch(API_URL);
                 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Erreur Airtable: ${response.status} - ${errorData.error?.message || response.statusText}`);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`Erreur API: ${response.status} - ${errorData.error || response.statusText}`);
                 }
                 
                 const data = await response.json();
@@ -819,7 +801,7 @@
                 showNotification('✅ Données chargées avec succès depuis Airtable');
                 
             } catch (error) {
-                console.error('Erreur de chargement Airtable:', error);
+                console.error('Erreur de chargement:', error);
                 debugInfo.lastError = error.message;
                 debugInfo.connectionTest = 'Échec';
                 updateDebugInfo();
