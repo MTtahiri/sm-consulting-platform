@@ -210,7 +210,7 @@
     <script>
         // Configuration GitHub - À MODIFIER AVEC VOS INFOS
         const GITHUB_CONFIG = {
-            username: 'votrenomutilisateur', // Remplacez par votre nom d'utilisateur GitHub
+            username: 'MTtahiri', // Remplacez par votre nom d'utilisateur GitHub
             repo: 'consultants-data',        // Remplacez si votre dépôt a un autre nom
             filepath: 'consultants.json'     // Remplacez si votre fichier a un autre nom
         };
