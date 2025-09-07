@@ -124,15 +124,12 @@ export default async function handler(req, res) {
 
 // Variables d'environnement à configurer sur Vercel :
 /*
-AIRTABLE_API_KEY=pat1234567890abcdef (votre Personal Access Token)
-AIRTABLE_BASE_ID=app8ULorqd7kPziBM (ID de "Base_Candidats_Master_2025")
-AIRTABLE_TABLE_NAME=Candidats (nom de l'onglet dans votre base)
+AIRTABLE_API_KEY=pathXG85b7P96CnjE.8fe40141abdb308305bfb43100855b821751c55e38edf0680bce3a9d19243235
+AIRTABLE_BASE_ID=app8ULorqd7kPziBM
+AIRTABLE_TABLE_NAME=Candidats
 
-Structure de votre base "Base_Candidats_Master_2025" :
-- Candidats (table principale que nous utilisons)
-- KPI 
-- DriveFiles
-- PARTENAIRES
-- LOGS
-- Stats
+Structure de votre onglet "Candidats" :
+Nom, Courriel, Telephone, Role, Experience, Localisation, Certifications, 
+Competences, Stack, Specialites, Niveau, Disponibilite, Date_Ajout, 
+TypeContrat, Disponible, TJM, Reviews, Rating
 */
