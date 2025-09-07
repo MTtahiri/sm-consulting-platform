@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platforme de recrutement - SMConsulting</title>
+    <title>IT Consulting Platform - Saveurs Maghrébines</title>
     <style>
         * {
             margin: 0;
@@ -122,6 +122,12 @@
             font-weight: 700;
             cursor: pointer;
             margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .config-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
         }
 
         /* Filtres avancés */
@@ -290,7 +296,7 @@
         .role-title {
             font-size: 1.6em;
             font-weight: 700;
-            background: linear-gradient(45deg, #00d4ff, #ffffff);
+            background: linear-gradient(45deg, #00d4ff, 'ffffff');
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 12px;
@@ -599,7 +605,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-content">
-            <div class="logo">🚀 IT Consulting Pro</div>
+            <div class="logo">SM Consulting</div>
             <div class="nav-stats">
                 <div class="stat-item">
                     <span>👥 Consultants actifs</span>
@@ -620,26 +626,30 @@
     <div class="container">
         <!-- Configuration info -->
         <div class="config-info">
-            <h3>🔧 Configuration GitHub détectée</h3>
-            <p>Chargement des données depuis GitHub...</p>
-            <div id="connection-status">⏳ Connexion en cours...</div>
+            <h3>🔧 Configuration Airtable détectée</h3>
+            <p>Connexion automatique en cours avec votre base de données Airtable...</p>
+            <div id="connection-status">⏳ Test de connexion Airtable...</div>
         </div>
 
         <!-- Header -->
         <div class="header-section">
             <h1 class="main-title">Consultants IT Premium</h1>
             <p class="subtitle">
-                Découvrez nos experts informatique triés sur le volet. 
-                Profils anonymisés et vérifiés pour vos projets tech.
+                La solution humaine pour trouver vos talents informatiques qualifiés et anonymes 
+            
             </p>
         </div>
 
-        <!-- Configuration GitHub -->
+        <!-- Configuration Airtable -->
         <div class="github-config">
-            <h3 class="config-title">📁 Source de données GitHub</h3>
-            <p>Les données sont chargées depuis un référentiel GitHub public</p>
-            <button class="config-button" onclick="loadConsultantsFromGitHub()">
-                🔄 Actualiser les données
+            <h3 class="config-title">📊 Source de données Airtable</h3>
+            <p>Les données sont chargées depuis votre base Airtable</p>
+            <button class="config-button" onclick="loadConsultantsFromAirtable()">
+                🔄 Actualiser depuis Airtable
+            </button>
+            <button class="config-button" onclick="loadConsultantsFromGitHub()" 
+                    style="background: linear-gradient(45deg, #ff6b6b, #ffd93d)">
+                📁 Charger depuis GitHub
             </button>
         </div>
 
@@ -695,7 +705,7 @@
         <div class="consultants-grid" id="consultants-container">
             <div class="loading">
                 <div class="loading-spinner"></div>
-                <p>Chargement des consultants depuis GitHub...</p>
+                <p>Chargement des consultants depuis Airtable...</p>
             </div>
         </div>
 
@@ -712,9 +722,16 @@
     </div>
 
     <script>
-        // Configuration GitHub
+        // Configuration Airtable avec variables d'environnement
+        const AIRTABLE_CONFIG = {
+            apiKey: typeof process !== 'undefined' && process.env ? process.env.AIRTABLE_API_KEY : '',
+            baseId: typeof process !== 'undefined' && process.env ? process.env.AIRTABLE_BASE_ID : 'app8ULorqd7kPziBM',
+            tableName: typeof process !== 'undefined' && process.env ? process.env.AIRTABLE_TABLE_NAME : 'Base_Candidats_Master_2025'
+        };
+
+        // Configuration GitHub de secours
         const GITHUB_CONFIG = {
-            username: 'MTtahiri', // À REMPLACER
+            username: 'MTtahiri',
             repo: 'consultants-data',
             filePath: 'consultants.json'
         };
@@ -731,11 +748,13 @@
         // Fonction de debug améliorée
         function updateDebugInfo() {
             const debugContent = document.getElementById('debug-content');
+            const hasAirtableKey = AIRTABLE_CONFIG.apiKey && AIRTABLE_CONFIG.apiKey.length > 0;
+            
             debugContent.innerHTML = `
-                <strong>Configuration GitHub :</strong><br>
-                • Utilisateur: ${GITHUB_CONFIG.username}<br>
-                • Repository: ${GITHUB_CONFIG.repo}<br>
-                • Fichier: ${GITHUB_CONFIG.filePath}<br><br>
+                <strong>Configuration Airtable :</strong><br>
+                • Base ID: ${AIRTABLE_CONFIG.baseId}<br>
+                • Table: ${AIRTABLE_CONFIG.tableName}<br>
+                • API Key: ${hasAirtableKey ? 'Configurée (cachée pour sécurité)' : 'Non configurée'}<br><br>
                 
                 <strong>État de la connexion :</strong><br>
                 • Test de connexion: ${debugInfo.connectionTest || 'En cours...'}<br>
@@ -759,21 +778,91 @@
             }, duration);
         }
 
-        // Fonction pour récupérer les consultants depuis GitHub
-        async function loadConsultantsFromGitHub() {
+        // Fonction pour récupérer les consultants depuis Airtable
+        async function loadConsultantsFromAirtable() {
             try {
-                document.getElementById('connection-status').textContent = '⏳ Connexion en cours...';
+                document.getElementById('connection-status').textContent = '⏳ Connexion à Airtable...';
                 document.getElementById('consultants-container').innerHTML = `
                     <div class="loading">
                         <div class="loading-spinner"></div>
-                        <p>Chargement des consultants depuis GitHub...</p>
+                        <p>Chargement des consultants depuis Airtable...</p>
                     </div>
                 `;
 
-                // Construction de l'URL GitHub
-                const githubUrl = `https://api.github.com/repos/${GITHUB_CONFIG.username}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.filePath}`;
-                debugInfo.apiUrl = githubUrl;
+                // Vérifier si la clé API est configurée
+                if (!AIRTABLE_CONFIG.apiKey) {
+                    throw new Error('Clé API Airtable non configurée. Vérifiez les variables d\'environnement sur Vercel.');
+                }
+
+                // Construction de l'URL Airtable
+                const airtableUrl = `https://api.airtable.com/v0/${AIRTABLE_CONFIG.baseId}/${encodeURIComponent(AIRTABLE_CONFIG.tableName)}`;
+                debugInfo.apiUrl = airtableUrl;
                 
+                const response = await fetch(airtableUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_CONFIG.apiKey}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erreur Airtable: ${response.status} ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Mise à jour des informations de debug
+                debugInfo.connectionTest = 'Réussi';
+                debugInfo.recordsFound = data.records ? data.records.length : 0;
+                updateDebugInfo();
+                
+                // Convertir le format Airtable vers notre format
+                const consultants = convertAirtableToConsultants(data.records);
+                
+                // Afficher les consultants
+                renderConsultants(consultants);
+                showNotification('✅ Données chargées avec succès depuis Airtable');
+                
+            } catch (error) {
+                console.error('Erreur de chargement Airtable:', error);
+                debugInfo.lastError = error.message;
+                debugInfo.connectionTest = 'Échec';
+                updateDebugInfo();
+                
+                // Solution de secours - données GitHub
+                showNotification('⚠️ Chargement Airtable échoué. Utilisation des données GitHub.');
+                loadConsultantsFromGitHub();
+            }
+        }
+
+        // Fonction pour convertir le format Airtable
+        function convertAirtableToConsultants(airtableRecords) {
+            if (!airtableRecords) return [];
+            
+            return airtableRecords.map(record => {
+                const fields = record.fields || {};
+                return {
+                    id: record.id,
+                    name: `${fields.Prenom || ''} ${fields.Nom || ''}`.trim(),
+                    position: fields.Poste || 'Consultant IT',
+                    experience: fields.Experience || 'Information non disponible',
+                    skills: fields.Competences ? fields.Competences.split(',').map(s => s.trim()) : [],
+                    status: fields.Statut || 'Disponibilité inconnue',
+                    location: fields.Localisation || 'Non spécifié',
+                    rate: fields.TJM_Souhaite || 'NC',
+                    formation: fields.Formation || 'Formation non spécifiée',
+                    contract: fields.Type_Contrat || 'Non spécifié',
+                    level: fields.Niveau || 'Non spécifié',
+                    availability: fields.Disponibilite || 'Non spécifiée'
+                };
+            });
+        }
+
+        // Fonction de secours avec données GitHub
+        async function loadConsultantsFromGitHub() {
+            try {
+                document.getElementById('connection-status').textContent = '⏳ Chargement depuis GitHub...';
+                
+                const githubUrl = `https://api.github.com/repos/MTtahiri/consultants-data/contents/consultants.json`;
                 const response = await fetch(githubUrl);
                 
                 if (!response.ok) {
@@ -781,28 +870,23 @@
                 }
                 
                 const data = await response.json();
-                
-                // Décoder le contenu base64
                 const content = JSON.parse(atob(data.content));
                 
                 // Mise à jour des informations de debug
-                debugInfo.connectionTest = 'Réussi';
+                debugInfo.connectionTest = 'Réussi (GitHub Fallback)';
                 debugInfo.recordsFound = content.consultants ? content.consultants.length : 0;
                 updateDebugInfo();
                 
                 // Afficher les consultants
                 renderConsultants(content.consultants);
-                showNotification('✅ Données chargées avec succès depuis GitHub');
+                showNotification('✅ Données chargées depuis GitHub (solution de secours)');
                 
             } catch (error) {
-                console.error('Erreur de chargement:', error);
-                debugInfo.lastError = error.message;
-                debugInfo.connectionTest = 'Échec';
-                updateDebugInfo();
+                console.error('Erreur de chargement GitHub:', error);
                 
-                // Solution de secours - données locales
+                // Solution de secours finale - données locales
                 loadLocalConsultants();
-                showNotification('⚠️ Chargement depuis GitHub échoué. Utilisation des données locales.');
+                showNotification('⚠️ Chargement GitHub échoué. Utilisation des données locales.');
             }
         }
 
@@ -851,48 +935,6 @@
                         contract: 'Freelance',
                         level: 'senior',
                         availability: 'Immédiate'
-                    },
-                    {
-                        id: 'rec2468013579',
-                        name: 'Sophie Leblanc',
-                        position: 'Data Scientist Lead',
-                        experience: '12 ans',
-                        skills: ['Python', 'TensorFlow', 'Pandas', 'SQL', 'Apache Spark'],
-                        status: 'Disponible dans 1 mois',
-                        location: 'Hybride',
-                        rate: '950€/jour',
-                        formation: 'Doctorat en Machine Learning',
-                        contract: 'CDI',
-                        level: 'expert',
-                        availability: 'Dans 1 mois'
-                    },
-                    {
-                        id: 'rec9876543210',
-                        name: 'Thomas Rousseau',
-                        position: 'Mobile Developer',
-                        experience: '5 ans',
-                        skills: ['Flutter', 'React Native', 'Firebase', 'Swift'],
-                        status: 'Disponible',
-                        location: 'Remote',
-                        rate: '650€/jour',
-                        formation: 'Master Développement Mobile',
-                        contract: 'Freelance',
-                        level: 'senior',
-                        availability: 'Immédiate'
-                    },
-                    {
-                        id: 'rec5432167890',
-                        name: 'Amélie Moreau',
-                        position: 'Backend Developer',
-                        experience: '6 ans',
-                        skills: ['Java', 'Spring Boot', 'PostgreSQL', 'Redis'],
-                        status: 'Disponible',
-                        location: 'Paris',
-                        rate: '700€/jour',
-                        formation: 'Master en Génie Logiciel',
-                        contract: 'CDI/Freelance',
-                        level: 'senior',
-                        availability: 'Immédiate'
                     }
                 ]
             };
@@ -910,7 +952,7 @@
                 container.innerHTML = `
                     <div class="config-info">
                         <h3>❌ Aucun consultant trouvé</h3>
-                        <p>Vérifiez votre configuration GitHub ou ajoutez des données locales.</p>
+                        <p>Vérifiez votre configuration Airtable ou ajoutez des données de secours.</p>
                     </div>
                 `;
                 return;
@@ -1000,7 +1042,7 @@
         // Chargement au démarrage
         document.addEventListener('DOMContentLoaded', function() {
             updateDebugInfo();
-            loadConsultantsFromGitHub();
+            loadConsultantsFromAirtable();
             
             // Configurer les écouteurs d'événements pour les filtres
             document.getElementById('stack-filter').addEventListener('change', filterConsultants);
