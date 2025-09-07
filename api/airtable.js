@@ -1,114 +1,106 @@
-// api/airtable.js - VERSION CORRIGÉE
+// api/airtable.js - Version avec pagination pour récupérer TOUS les candidats
 export default async function handler(req, res) {
-  // Ajouter les en-têtes CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // Gérer les requêtes OPTIONS (preflight)
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Vérifier que la méthode est GET
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed. Use GET.' });
   }
 
   try {
-    // Vérifier que les variables d'environnement sont configurées
-    const apiKey = process.env.AIRTABLE_API_KEY || process.env.AIRTABLE_TOKEN;
+    const apiKey = process.env.AIRTABLE_API_KEY;
     const baseId = process.env.AIRTABLE_BASE_ID;
     const tableName = process.env.AIRTABLE_TABLE_NAME || 'Candidats';
-
-    console.log('Configuration API:', {
-      hasApiKey: !!apiKey,
-      apiKeyLength: apiKey?.length || 0,
-      baseId: baseId,
-      tableName: tableName
-    });
 
     if (!apiKey || !baseId) {
       return res.status(500).json({ 
         error: 'Configuration manquante',
-        details: 'AIRTABLE_API_KEY (ou AIRTABLE_TOKEN) et AIRTABLE_BASE_ID sont requis',
-        config: {
-          hasApiKey: !!apiKey,
-          hasBaseId: !!baseId,
-          tableName: tableName
-        }
+        details: 'AIRTABLE_API_KEY et AIRTABLE_BASE_ID sont requis'
       });
     }
 
-    // Construire l'URL de l'API Airtable
-    const encodedTableName = encodeURIComponent(tableName);
-    const apiUrl = `https://api.airtable.com/v0/${baseId}/${encodedTableName}`;
+    // Fonction pour récupérer TOUS les enregistrements avec pagination
+    async function getAllRecords() {
+      let allRecords = [];
+      let offset = null;
+      let pageCount = 0;
 
-    console.log('URL API:', apiUrl);
+      do {
+        pageCount++;
+        console.log(`Récupération page ${pageCount}...`);
 
-    // Préparer les en-têtes d'authentification
-    const headers = {
-      'Content-Type': 'application/json'
-    };
+        // Construire l'URL avec pagination
+        const encodedTableName = encodeURIComponent(tableName);
+        let apiUrl = `https://api.airtable.com/v0/${baseId}/${encodedTableName}`;
+        
+        // Paramètres de requête
+        const params = new URLSearchParams({
+          pageSize: '100', // Maximum par page
+          view: 'Grid view', // Utiliser la vue par défaut
+          // Trier par date d'ajout (plus récent d'abord)
+          sort: JSON.stringify([{field: 'Date_Ajout', direction: 'desc'}])
+        });
 
-    // Gérer les deux types d'authentification Airtable
-    if (apiKey.startsWith('pat')) {
-      // Nouveau Personal Access Token
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    } else if (apiKey.startsWith('key')) {
-      // Ancien API Key (deprecated)
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    } else {
-      // Essayer quand même comme Bearer token
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    }
-
-    // Faire la requête à l'API Airtable
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: headers
-    });
-
-    console.log('Response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-    // Vérifier si la réponse est OK
-    if (!response.ok) {
-      let errorData = {};
-      try {
-        errorData = await response.json();
-      } catch (e) {
-        console.log('Impossible de parser le JSON d\'erreur');
-      }
-
-      console.log('Erreur Airtable:', errorData);
-
-      return res.status(response.status).json({
-        error: 'Erreur Airtable',
-        status: response.status,
-        statusText: response.statusText,
-        details: errorData.error || 'Erreur inconnue',
-        airtableError: errorData,
-        debugInfo: {
-          url: apiUrl,
-          hasAuth: !!headers['Authorization'],
-          authType: apiKey?.substring(0, 3) || 'unknown'
+        if (offset) {
+          params.append('offset', offset);
         }
-      });
+
+        apiUrl += '?' + params.toString();
+
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`Erreur API page ${pageCount}: ${response.status} - ${errorData.error || response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        // Ajouter les enregistrements de cette page
+        if (data.records && data.records.length > 0) {
+          allRecords.push(...data.records);
+        }
+
+        // Vérifier s'il y a une page suivante
+        offset = data.offset;
+
+        console.log(`Page ${pageCount}: ${data.records?.length || 0} enregistrements récupérés`);
+        console.log(`Total cumulé: ${allRecords.length}`);
+
+      } while (offset); // Continue tant qu'il y a un offset
+
+      return allRecords;
     }
 
-    // Récupérer les données
-    const data = await response.json();
+    // Récupérer tous les enregistrements
+    const allRecords = await getAllRecords();
     
-    console.log(`Données récupérées: ${data.records?.length || 0} enregistrements`);
+    console.log(`✅ TOTAL FINAL: ${allRecords.length} candidats récupérés`);
     
-    // Retourner les données avec des informations de debug
+    // Retourner toutes les données avec statistiques
     res.status(200).json({
-      ...data,
+      records: allRecords,
+      _pagination: {
+        totalRecords: allRecords.length,
+        expectedTotal: 195, // Nombre attendu dans votre base
+        pagesProcessed: Math.ceil(allRecords.length / 100),
+        retrievalComplete: true
+      },
       _debug: {
-        recordCount: data.records?.length || 0,
+        recordCount: allRecords.length,
         timestamp: new Date().toISOString(),
-        source: 'airtable-api'
+        source: 'airtable-api-paginated'
       }
     });
     
@@ -122,20 +114,6 @@ export default async function handler(req, res) {
   }
 }
 
-// Variables d'environnement à configurer sur Vercel :
-/*
-AIRTABLE_API_KEY=pathXG85b7P96CnjE.8fe40141abdb308305bfb43100855b821751c55e38edf0680bce3a9d19243235
-AIRTABLE_BASE_ID=appNwg9iP8ub0cDCn (CORRIGÉ avec la vraie Base ID)
-AIRTABLE_TABLE_NAME=Candidats
-
-Informations extraites de votre lien :
-- Base: Base_Candidats_Master_2025
-- Base ID: appNwg9iP8ub0cDCn  
-- Table ID: tblB2QFKXVKeJPNg1
-- Vue: viwTq4UJ2rGF8yGbn
-
-Structure des colonnes :
-Nom, Courriel, Telephone, Role, Experience, Localisation, Certifications, 
-Competences, Stack, Specialites, Niveau, Disponibilite, Date_Ajout, 
-TypeContrat, Disponible, TJM, Reviews, Rating
-*/
+// Alternative: Paramètres URL pour filtrer/paginer
+// GET /api/airtable?page=1&limit=50&filter=disponible
+// GET /api/airtable?search=react&level=senior
