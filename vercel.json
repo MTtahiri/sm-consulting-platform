@@ -1,15 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30
     }
-  ],
+  },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/recruiter", "dest": "/public/recruiter-dashboard.html" },
@@ -24,10 +19,5 @@
     "GOOGLE_PRIVATE_KEY": "@google_private_key",
     "GOOGLE_CLIENT_EMAIL": "@google_client_email",
     "GOOGLE_DRIVE_PARENT_FOLDER_ID": "@google_drive_parent_folder_id"
-  },
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 30
-    }
   }
 }
