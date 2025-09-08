@@ -148,3 +148,12 @@
     "AIRTABLE_WEBHOOK_HR_NOTIFICATION=https://hooks.airtable.com/workflows/..."
   ]
 }
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/recruiter", "dest": "/public/recruiter-dashboard.html" },
+    { "src": "/inscription", "dest": "/public/candidate-form.html" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
