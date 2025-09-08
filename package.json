@@ -19,3 +19,11 @@
   "author": "SM Consulting",
   "license": "Private"
 }
+{
+  "name": "sm-consulting-platform", 
+  "version": "1.0.0",
+  "dependencies": {
+    "formidable": "^3.5.1",
+    "googleapis": "^128.0.0"
+  }
+}
