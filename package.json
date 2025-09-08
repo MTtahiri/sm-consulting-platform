@@ -1,21 +1,26 @@
 {
- "name": "sm-consulting-2025",
-  "version": "1.0.0",
-  "description": "Plateforme de gestion des consultants IT pour SM Consulting",
-  "main": "index.html",
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Build completed'",
-    "deploy": "vercel --prod"
-  },
-  "dependencies": {
-    "formidable": "^3.5.1",
-    "googleapis": "^128.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "keywords": ["consulting", "airtable", "vercel", "recruitment"],
-  "author": "SM Consulting",
-  "license": "Private"
+    "name": "sm-consulting-2025",
+    "version": "1.0.0",
+    "description": "Plateforme de gestion des consultants IT pour SM Consulting",
+    "main": "index.html",
+    "scripts": {
+        "dev": "vercel dev",
+        "build": "echo 'Build completed'",
+        "deploy": "vercel --prod"
+    },
+    "dependencies": {
+        "formidable": "^3.5.1",
+        "googleapis": "^128.0.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "keywords": [
+        "consulting",
+        "airtable",
+        "vercel",
+        "recruitment"
+    ],
+    "author": "SM Consulting",
+    "license": "Private"
 }
