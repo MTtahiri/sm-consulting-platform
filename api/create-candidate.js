@@ -329,9 +329,253 @@ function detectTechDiversity(skills) {
 
 // Déclencher les automations Airtable
 async function triggerAutomations(recordId, enrichedData) {
-  // 1. Automation pour notification équipe RH
-  await fetch(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Automations/trigger`, {
-    method: 'POST',
+  const automations = [];
+
+  try {
+    // 1. Automation pour notification équipe RH
+    const hrNotification = await fetch(`${process.env.AIRTABLE_WEBHOOK_HR_NOTIFICATION}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recordId: recordId,
+        candidateName: `${enrichedData.prenom} ${enrichedData.nom}`,
+        position: enrichedData.poste,
+        matchingScore: enrichedData.score_matching,
+        urgency: enrichedData.disponibilite === 'Immédiate' ? 'high' : 'normal'
+      })
+    });
+    
+    automations.push({ type: 'HR_Notification', status: hrNotification.ok ? 'success' : 'failed' });
+
+    // 2. Automation pour anonymisation CV
+    if (enrichedData.cv_drive_urls) {
+      const anonymization = await fetch(`/api/anonymize-cv`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recordId: recordId,
+          driveUrls: enrichedData.cv_drive_urls.split(', '),
+          candidateInfo: {
+            nom: enrichedData.nom,
+            prenom: enrichedData.prenom,
+            email: enrichedData.email,
+            telephone: enrichedData.telephone
+          }
+        })
+      });
+      
+      automations.push({ type: 'CV_Anonymization', status: anonymization.ok ? 'success' : 'failed' });
+    }
+
+    // 3. Automation pour indexation recherche
+    const indexing = await fetch(`/api/index-candidate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recordId: recordId,
+        searchableData: {
+          skills: enrichedData.competences_extraites,
+          position: enrichedData.poste,
+          location: enrichedData.ville,
+          level: enrichedData.niveau_estime,
+          availability: enrichedData.disponibilite
+        }
+      })
+    });
+    
+    automations.push({ type: 'Search_Indexing', status: indexing.ok ? 'success' : 'failed' });
+
+    // 4. Mise à jour du statut dans Airtable
+    await updateAirtableRecord(recordId, {
+      'Statut_Traitement': 'Traité automatiquement',
+      'Automations_Status': JSON.stringify(automations),
+      'Date_Traitement_Complet': new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Erreur lors des automations:', error);
+    await updateAirtableRecord(recordId, {
+      'Statut_Traitement': 'Erreur automation',
+      'Erreur_Details': error.message
+    });
+  }
+
+  return automations;
+}
+
+// Mise à jour d'un enregistrement Airtable
+async function updateAirtableRecord(recordId, fields) {
+  const response = await fetch(`https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Candidats`, {
+    method: 'PATCH',
     headers: {
       'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`,
-      'Content-Type': 'application/
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      records: [{
+        id: recordId,
+        fields: fields
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erreur mise à jour Airtable: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
+// Fonction de parsing CV (simulée - nécessite une vraie implémentation)
+async function extractCVData(driveFileId) {
+  // Cette fonction utiliserait une API de parsing de CV comme:
+  // - Google Document AI
+  // - Amazon Textract
+  // - Une solution open source comme Spacy/NLTK
+  
+  // Simulation des données extraites
+  return {
+    skills: ['React', 'Node.js', 'Python', 'AWS', 'Docker'],
+    experiences: [
+      {
+        company: 'TechCorp',
+        position: 'Senior Developer',
+        duration: 3.5,
+        startDate: '2021-01',
+        endDate: '2024-06',
+        description: 'Développement d\'applications web avec React et Node.js'
+      }
+    ],
+    education: [
+      {
+        institution: 'Université Tech',
+        degree: 'Master Informatique',
+        year: '2020',
+        field: 'Génie Logiciel'
+      }
+    ],
+    certifications: ['AWS Solutions Architect', 'Scrum Master'],
+    languages: ['Français', 'Anglais', 'Espagnol'],
+    contactInfo: {
+      email: 'candidate@example.com',
+      phone: '+33123456789'
+    }
+  };
+}
+
+// Configuration des webhooks Airtable pour automatisation
+const AIRTABLE_AUTOMATIONS_CONFIG = `
+// Configuration des automations Airtable à créer manuellement :
+
+1. AUTOMATION: "Nouveau Candidat - Notification RH"
+   - Trigger: Nouveau record avec Statut = "Nouveau candidat"
+   - Action: Envoyer email à l'équipe RH avec détails candidat
+   - Template email: "Nouveau candidat: {Prenom} {Nom} - {Poste} - Score: {Score_Matching}%"
+
+2. AUTOMATION: "CV Prêt - Notification Recruteur"  
+   - Trigger: Champ CV_Anonyme_URL devient non vide
+   - Action: Slack/Teams notification aux recruteurs
+   - Message: "CV anonymisé disponible pour {Poste} - Consulter: {CV_Anonyme_URL}"
+
+3. AUTOMATION: "Candidat Disponible - Alerte Urgente"
+   - Trigger: Disponibilite = "Immédiate" ET Score_Matching > 80
+   - Action: Notification immédiate + flag prioritaire
+   - Condition: Seulement pendant heures ouvrables
+
+4. AUTOMATION: "Mise à jour Drive - Sync Status"
+   - Trigger: Modification des champs Drive
+   - Action: Vérifier intégrité des liens et mettre à jour statut
+
+5. AUTOMATION: "Weekly Report - Nouveaux Candidats"
+   - Trigger: Chaque lundi à 9h
+   - Action: Rapport hebdomadaire des nouveaux candidats
+   - Format: Tableau avec métriques clés
+`;
+
+// Fonction utilitaire pour créer les vues Airtable automatiquement
+async function createAirtableViews() {
+  const views = [
+    {
+      name: "Candidats - Validation Pending",
+      type: "grid",
+      filters: [
+        { field: "Statut", operator: "is", value: "Nouveau candidat" }
+      ],
+      sorts: [
+        { field: "Score_Matching", direction: "desc" },
+        { field: "Date_Ajout", direction: "desc" }
+      ]
+    },
+    {
+      name: "Disponibles Immédiatement",
+      type: "grid", 
+      filters: [
+        { field: "Disponibilite", operator: "is", value: "Immédiate" },
+        { field: "Statut", operator: "isNot", value: "Rejeté" }
+      ],
+      sorts: [
+        { field: "Score_Matching", direction: "desc" }
+      ]
+    },
+    {
+      name: "Top Performers (Score > 80)",
+      type: "grid",
+      filters: [
+        { field: "Score_Matching", operator: "isGreater", value: 80 }
+      ],
+      sorts: [
+        { field: "Score_Matching", direction: "desc" },
+        { field: "Date_Ajout", direction: "desc" }
+      ]
+    },
+    {
+      name: "Par Stack Technique",
+      type: "grouped",
+      groupBy: "Stack_Principale",
+      sorts: [
+        { field: "Score_Matching", direction: "desc" }
+      ]
+    }
+  ];
+
+  // Code pour créer les vues via API Airtable
+  // Note: Nécessite des permissions spéciales sur la base
+  return views;
+}
+
+// Variables d'environnement nécessaires
+const REQUIRED_ENV_VARS = `
+# Airtable
+AIRTABLE_API_KEY=pathXG85b7P96CnjE.8fe40141abdb308305bfb43100855b821751c55e38edf0680bce3a9d19243235
+AIRTABLE_BASE_ID=appNwg9iP8ub0cDCn
+AIRTABLE_TABLE_NAME=Candidats
+
+# Google Drive
+GOOGLE_PROJECT_ID=your-project-id
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----..."
+GOOGLE_CLIENT_EMAIL=service-account@project.iam.gserviceaccount.com
+GOOGLE_DRIVE_PARENT_FOLDER_ID=1ABcDeFgHiJkLmNoPqRsTuVwXyZ
+
+# Webhooks Airtable  
+AIRTABLE_WEBHOOK_HR_NOTIFICATION=https://hooks.airtable.com/workflows/...
+AIRTABLE_WEBHOOK_CV_READY=https://hooks.airtable.com/workflows/...
+
+# Notifications
+HR_EMAIL_1=rh1@sm-consulting.com
+HR_EMAIL_2=rh2@sm-consulting.com
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...
+
+# CV Processing
+CV_PARSER_API_KEY=your-cv-parser-api-key
+ANONYMIZATION_SERVICE_URL=https://your-anonymization-service.com
+`;
+
+export { 
+  extractCandidateData,
+  analyzeCVs, 
+  enrichCandidateData,
+  triggerAutomations,
+  createAirtableViews,
+  AIRTABLE_AUTOMATIONS_CONFIG,
+  REQUIRED_ENV_VARS 
+};
