@@ -1,159 +1,33 @@
 {
-  "package.json": {
-    "name": "sm-consulting-platform",
-    "version": "1.0.0",
-    "description": "Plateforme de gestion des consultants IT - SM Consulting",
-    "main": "index.js",
-    "scripts": {
-      "dev": "vercel dev",
-      "build": "echo 'Build completed'",
-      "start": "vercel dev",
-      "deploy": "vercel --prod"
-    },
-    "dependencies": {
-      "formidable": "^3.5.1",
-      "googleapis": "^128.0.0",
-      "pdf-parse": "^1.1.1",
-      "mammoth": "^1.6.0",
-      "node-fetch": "^3.3.2"
-    },
-    "devDependencies": {
-      "vercel": "^32.5.0"
-    },
-    "engines": {
-      "node": "18.x"
-    },
-    "keywords": ["airtable", "google-drive", "consulting", "recruitment"],
-    "author": "SM Consulting",
-    "license": "MIT"
-  },
-
-  "vercel.json": {
-    "version": 2,
-    "builds": [
-      {
-        "src": "public/**",
-        "use": "@vercel/static"
-      },
-      {
-        "src": "api/**/*.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/api/(.*)",
-        "dest": "/api/$1"
-      },
-      {
-        "src": "/recruiter",
-        "dest": "/public/recruiter-dashboard.html"
-      },
-      {
-        "src": "/inscription",
-        "dest": "/public/candidate-form.html"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "/public/$1"
-      }
-    ],
-    "env": {
-      "AIRTABLE_API_KEY": "@airtable_api_key",
-      "AIRTABLE_BASE_ID": "@airtable_base_id",
-      "AIRTABLE_TABLE_NAME": "@airtable_table_name",
-      "GOOGLE_PROJECT_ID": "@google_project_id",
-      "GOOGLE_PRIVATE_KEY": "@google_private_key",
-      "GOOGLE_CLIENT_EMAIL": "@google_client_email",
-      "GOOGLE_DRIVE_PARENT_FOLDER_ID": "@google_drive_parent_folder_id"
-    },
-    "functions": {
-      "api/**/*.js": {
-        "maxDuration": 30
-      }
-    }
-  },
-
-  ".gitignore": [
-    "# Dependencies",
-    "node_modules/",
-    "npm-debug.log*",
-    "yarn-debug.log*",
-    "yarn-error.log*",
-    "",
-    "# Environment variables",
-    ".env",
-    ".env.local",
-    ".env.development.local",
-    ".env.test.local",
-    ".env.production.local",
-    "",
-    "# Vercel",
-    ".vercel",
-    "",
-    "# Logs",
-    "logs",
-    "*.log",
-    "",
-    "# Runtime data",
-    "pids",
-    "*.pid",
-    "*.seed",
-    "*.pid.lock",
-    "",
-    "# Coverage directory used by tools like istanbul",
-    "coverage/",
-    "",
-    "# nyc test coverage",
-    ".nyc_output",
-    "",
-    "# OS generated files",
-    ".DS_Store",
-    ".DS_Store?",
-    "._*",
-    ".Spotlight-V100",
-    ".Trashes",
-    "ehthumbs.db",
-    "Thumbs.db",
-    "",
-    "# Temporary files",
-    "temp/",
-    "tmp/",
-    "",
-    "# IDE",
-    ".vscode/",
-    ".idea/"
-  ],
-
-  ".env.example": [
-    "# Airtable Configuration",
-    "AIRTABLE_API_KEY=pathXG85b7P96CnjE.8fe40141abdb308305bfb43100855b821751c55e38edf0680bce3a9d19243235",
-    "AIRTABLE_BASE_ID=appNwg9iP8ub0cDCn",
-    "AIRTABLE_TABLE_NAME=Candidats",
-    "",
-    "# Google Drive Configuration", 
-    "GOOGLE_PROJECT_ID=your-project-id",
-    "GOOGLE_PRIVATE_KEY_ID=your-private-key-id", 
-    "GOOGLE_PRIVATE_KEY=\"-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n\"",
-    "GOOGLE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com",
-    "GOOGLE_CLIENT_ID=your-client-id",
-    "GOOGLE_DRIVE_PARENT_FOLDER_ID=1ABcDeFgHiJkLmNoPqRsTuVwXyZ",
-    "",
-    "# HR Team Configuration",
-    "HR_EMAIL_1=rh1@sm-consulting.com", 
-    "HR_EMAIL_2=rh2@sm-consulting.com",
-    "",
-    "# Webhooks (optionnel)",
-    "SLACK_WEBHOOK_URL=https://hooks.slack.com/services/...",
-    "AIRTABLE_WEBHOOK_HR_NOTIFICATION=https://hooks.airtable.com/workflows/..."
-  ]
-}
-{
   "version": 2,
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/recruiter", "dest": "/public/recruiter-dashboard.html" },
     { "src": "/inscription", "dest": "/public/candidate-form.html" },
     { "src": "/(.*)", "dest": "/public/$1" }
-  ]
+  ],
+  "env": {
+    "AIRTABLE_API_KEY": "@airtable_api_key",
+    "AIRTABLE_BASE_ID": "@airtable_base_id",
+    "AIRTABLE_TABLE_NAME": "@airtable_table_name",
+    "GOOGLE_PROJECT_ID": "@google_project_id",
+    "GOOGLE_PRIVATE_KEY": "@google_private_key",
+    "GOOGLE_CLIENT_EMAIL": "@google_client_email",
+    "GOOGLE_DRIVE_PARENT_FOLDER_ID": "@google_drive_parent_folder_id"
+  },
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30
+    }
+  }
 }
