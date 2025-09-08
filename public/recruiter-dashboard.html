@@ -1,1 +1,787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM Consulting - Dashboard Recruteur</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .selected-count {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: #0a0a1a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .action-button {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            border: none;
+            color: #0a0a1a;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .filters-panel {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 0.9em;
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .filter-select, .filter-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .candidates-table {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .bulk-button {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .bulk-button:hover {
+            background: #00d4ff;
+            color: #0a0a1a;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            vertical-align: top;
+        }
+
+        .table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .table tr.selected {
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 4px solid #00ff88;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .candidate-role {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(45deg, rgba(255,107,107,0.2), rgba(255,217,61,0.2));
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .status-busy {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid #ffaa00;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            border: 1px solid #00d4ff;
+        }
+
+        .btn-cv {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+
+        .btn-contact {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+
+        .btn-small:hover {
+            transform: scale(1.05);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .page-button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-button.active {
+            background: #00d4ff;
+            color: #0a0a1a;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .filters-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .table {
+                font-size: 0.9em;
+            }
+            
+            .skills-tags {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">SM Consulting - Dashboard Recruteur</div>
+            <div class="nav-actions">
+                <div class="selected-count">
+                    <span id="selected-count">0</span> candidat(s) sélectionné(s)
+                </div>
+                <button class="action-button" id="export-selected" disabled>
+                    Exporter CVs
+                </button>
+                <button class="action-button" id="create-shortlist" disabled>
+                    Créer shortlist
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1 class="main-title">Tableau de bord Recruteur</h1>
+            <p>Gérez vos candidats IT et accédez à leurs CVs anonymisés</p>
+        </div>
+
+        <!-- Filtres avancés -->
+        <div class="filters-panel">
+            <div class="filter-group">
+                <label class="filter-label">Stack Technique</label>
+                <select class="filter-select" id="stack-filter">
+                    <option value="">Toutes les stacks</option>
+                    <option value="react">React</option>
+                    <option value="angular">Angular</option>
+                    <option value="vue">Vue.js</option>
+                    <option value="node">Node.js</option>
+                    <option value="python">Python</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Niveau</label>
+                <select class="filter-select" id="level-filter">
+                    <option value="">Tous niveaux</option>
+                    <option value="junior">Junior</option>
+                    <option value="senior">Senior</option>
+                    <option value="expert">Expert</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Disponibilité</label>
+                <select class="filter-select" id="availability-filter">
+                    <option value="">Toutes</option>
+                    <option value="immediate">Immédiate</option>
+                    <option value="1month">Dans le mois</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Recherche</label>
+                <input type="text" class="filter-input" id="search-input" placeholder="Nom, compétence, ville...">
+            </div>
+        </div>
+
+        <!-- Tableau des candidats -->
+        <div class="candidates-table">
+            <div class="table-header">
+                <h3>Liste des candidats (195)</h3>
+            </div>
+            
+            <div class="bulk-actions">
+                <button class="bulk-button" onclick="selectAll()">Tout sélectionner</button>
+                <button class="bulk-button" onclick="selectNone()">Tout désélectionner</button>
+                <button class="bulk-button" onclick="selectAvailable()">Sél. disponibles</button>
+                <button class="bulk-button" onclick="selectByLevel('senior')">Sél. seniors</button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th width="50"><input type="checkbox" class="checkbox" id="select-all"></th>
+                        <th width="200">Candidat</th>
+                        <th width="150">Compétences</th>
+                        <th width="100">Localisation</th>
+                        <th width="100">TJM</th>
+                        <th width="120">Disponibilité</th>
+                        <th width="120">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="candidates-tbody">
+                    <!-- Les candidats seront chargés ici -->
+                </tbody>
+            </table>
+
+            <div class="pagination" id="pagination">
+                <!-- Pagination sera générée ici -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour voir le profil complet -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Profil Candidat</h3>
+                <button class="close-button" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="profile-content">
+                <!-- Contenu du profil sera chargé ici -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedCandidates = new Set();
+        let allCandidates = [];
+        let filteredCandidates = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        // Données d'exemple (remplacez par vos vraies données)
+        const sampleCandidates = [
+            {
+                id: 'rec001',
+                name: 'Jean Dupont',
+                role: 'Développeur Full Stack Senior',
+                skills: ['React', 'Node.js', 'MongoDB', 'Docker'],
+                location: 'Paris',
+                tjm: '750€',
+                availability: 'Immédiate',
+                status: 'available',
+                level: 'senior',
+                experience: '8 ans',
+                email: 'j.dupont@example.com',
+                hasCv: true
+            },
+            {
+                id: 'rec002',
+                name: 'Marie Martin',
+                role: 'DevOps Architect',
+                skills: ['AWS', 'Kubernetes', 'Terraform', 'Jenkins'],
+                location: 'Lyon',
+                tjm: '900€',
+                availability: 'Dans 1 mois',
+                status: 'busy',
+                level: 'expert',
+                experience: '12 ans',
+                email: 'm.martin@example.com',
+                hasCv: true
+            },
+            // Ajoutez plus de candidats d'exemple
+        ];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCandidates();
+            setupEventListeners();
+        });
+
+        function loadCandidates() {
+            // Simuler le chargement depuis Airtable
+            allCandidates = sampleCandidates;
+            filteredCandidates = [...allCandidates];
+            renderTable();
+        }
+
+        function setupEventListeners() {
+            // Filtres
+            document.getElementById('stack-filter').addEventListener('change', applyFilters);
+            document.getElementById('level-filter').addEventListener('change', applyFilters);
+            document.getElementById('availability-filter').addEventListener('change', applyFilters);
+            document.getElementById('search-input').addEventListener('input', applyFilters);
+
+            // Sélection principale
+            document.getElementById('select-all').addEventListener('change', function() {
+                if (this.checked) {
+                    selectAllVisible();
+                } else {
+                    selectNone();
+                }
+            });
+
+            // Actions en lot
+            document.getElementById('export-selected').addEventListener('click', exportSelectedCVs);
+            document.getElementById('create-shortlist').addEventListener('click', createShortlist);
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('candidates-tbody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredCandidates.slice(start, end);
+
+            tbody.innerHTML = pageData.map(candidate => `
+                <tr class="${selectedCandidates.has(candidate.id) ? 'selected' : ''}" data-id="${candidate.id}">
+                    <td>
+                        <input type="checkbox" class="checkbox candidate-checkbox" 
+                               value="${candidate.id}" 
+                               ${selectedCandidates.has(candidate.id) ? 'checked' : ''}
+                               onchange="toggleCandidate('${candidate.id}')">
+                    </td>
+                    <td>
+                        <div class="candidate-name">${candidate.name}</div>
+                        <div class="candidate-role">${candidate.role}</div>
+                        <div class="candidate-role">${candidate.experience}</div>
+                    </td>
+                    <td>
+                        <div class="skills-tags">
+                            ${candidate.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td>${candidate.location}</td>
+                    <td><strong>${candidate.tjm}</strong></td>
+                    <td>
+                        <span class="status-badge status-${candidate.status}">
+                            ${candidate.availability}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-view" onclick="viewProfile('${candidate.id}')">
+                                👁️ Voir
+                            </button>
+                            <button class="btn-small btn-cv" onclick="downloadCV('${candidate.id}')" 
+                                    ${!candidate.hasCv ? 'disabled' : ''}>
+                                📄 CV
+                            </button>
+                            <button class="btn-small btn-contact" onclick="contactCandidate('${candidate.id}')">
+                                📧 Contact
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            updatePagination();
+            updateSelectedCount();
+        }
+
+        function toggleCandidate(candidateId) {
+            if (selectedCandidates.has(candidateId)) {
+                selectedCandidates.delete(candidateId);
+            } else {
+                selectedCandidates.add(candidateId);
+            }
+            
+            // Mettre à jour l'affichage
+            const row = document.querySelector(`tr[data-id="${candidateId}"]`);
+            if (row) {
+                row.classList.toggle('selected', selectedCandidates.has(candidateId));
+            }
+            
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = selectedCandidates.size;
+            document.getElementById('selected-count').textContent = count;
+            
+            // Activer/désactiver les boutons d'action
+            const exportBtn = document.getElementById('export-selected');
+            const shortlistBtn = document.getElementById('create-shortlist');
+            
+            exportBtn.disabled = count === 0;
+            shortlistBtn.disabled = count === 0;
+        }
+
+        function selectAll() {
+            filteredCandidates.forEach(candidate => {
+                selectedCandidates.add(candidate.id);
+            });
+            renderTable();
+        }
+
+        function selectNone() {
+            selectedCandidates.clear();
+            renderTable();
+        }
+
+        function selectAllVisible() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredCandidates.slice(start, end);
+            
+            pageData.forEach(candidate => {
+                selectedCandidates.add(candidate.id);
+            });
+            renderTable();
+        }
+
+        function selectAvailable() {
+            filteredCandidates.forEach(candidate => {
+                if (candidate.status === 'available') {
+                    selectedCandidates.add(candidate.id);
+                }
+            });
+            renderTable();
+        }
+
+        function selectByLevel(level) {
+            filteredCandidates.forEach(candidate => {
+                if (candidate.level === level) {
+                    selectedCandidates.add(candidate.id);
+                }
+            });
+            renderTable();
+        }
+
+        function applyFilters() {
+            const stackFilter = document.getElementById('stack-filter').value.toLowerCase();
+            const levelFilter = document.getElementById('level-filter').value.toLowerCase();
+            const availabilityFilter = document.getElementById('availability-filter').value.toLowerCase();
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+
+            filteredCandidates = allCandidates.filter(candidate => {
+                const matchesStack = !stackFilter || 
+                    candidate.skills.some(skill => skill.toLowerCase().includes(stackFilter));
+                const matchesLevel = !levelFilter || candidate.level === levelFilter;
+                const matchesAvailability = !availabilityFilter || 
+                    candidate.availability.toLowerCase().includes(availabilityFilter);
+                const matchesSearch = !searchQuery || 
+                    candidate.name.toLowerCase().includes(searchQuery) ||
+                    candidate.role.toLowerCase().includes(searchQuery) ||
+                    candidate.location.toLowerCase().includes(searchQuery) ||
+                    candidate.skills.some(skill => skill.toLowerCase().includes(searchQuery));
+
+                return matchesStack && matchesLevel && matchesAvailability && matchesSearch;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredCandidates.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            let paginationHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <button class="page-button ${i === currentPage ? 'active' : ''}" 
+                            onclick="goToPage(${i})">${i}</button>
+                `;
+            }
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderTable();
+        }
+
+        function viewProfile(candidateId) {
+            const candidate = allCandidates.find(c => c.id === candidateId);
+            if (!candidate) return;
+
+            const modalContent = document.getElementById('profile-content');
+            modalContent.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2>${candidate.name}</h2>
+                    <p style="color: #00d4ff;">${candidate.role}</p>
+                    <p style="color: rgba(255,255,255,0.7);">${candidate.experience}</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <h4 style="color: #00ff88; margin-bottom: 10px;">Compétences</h4>
+                        <div class="skills-tags">
+                            ${candidate.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="color: #00ff88; margin-bottom: 10px;">Informations</h4>
+                        <p><strong>Localisation:</strong> ${candidate.location}</p>
+                        <p><strong>TJM:</strong> ${candidate.tjm}</p>
+                        <p><strong>Disponibilité:</strong> ${candidate.availability}</p>
+                        <p><strong>Niveau:</strong> ${candidate.level}</p>
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <button class="action-button" onclick="downloadCV('${candidate.id}')" style="margin: 10px;">
+                        Télécharger CV
+                    </button>
+                    <button class="action-button" onclick="contactCandidate('${candidate.id}')" style="margin: 10px;">
+                        Contacter
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('profile-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('profile-modal').style.display = 'none';
+        }
+
+        function downloadCV(candidateId) {
+            // Intégration avec Google Drive API
+            alert(`Téléchargement du CV pour ${candidateId} depuis Google Drive...`);
+            // Ici vous intégreriez l'API Google Drive
+        }
+
+        function contactCandidate(candidateId) {
+            const candidate = allCandidates.find(c => c.id === candidateId);
+            if (candidate && candidate.email) {
+                window.location.href = `mailto:${candidate.email}?subject=Mission IT&body=Bonjour ${candidate.name}...`;
+            }
+        }
+
+        function exportSelectedCVs() {
+            const selectedList = Array.from(selectedCandidates);
+            alert(`Export de ${selectedList.length} CV(s) vers Google Drive...`);
+            // Intégration avec Google Drive API pour export en masse
+        }
+
+        function createShortlist() {
+            const selectedList = Array.from(selectedCandidates);
+            alert(`Création d'une shortlist avec ${selectedList.length} candidat(s)...`);
+            // Créer une nouvelle vue Airtable avec ces candidats
+        }
