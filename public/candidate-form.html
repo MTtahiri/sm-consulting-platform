@@ -1,1 +1,971 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM Consulting - Inscription Consultant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #00d4ff, #00ff88);
+            height: 100%;
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.95em;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #00d4ff;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            accent-color: #00d4ff;
+        }
+
+        .skills-input-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .skills-input {
+            flex: 1;
+        }
+
+        .add-skill-btn {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            border: none;
+            color: #0a0a1a;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-skill-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(45deg, rgba(255,107,107,0.2), rgba(255,217,61,0.2));
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remove-skill {
+            cursor: pointer;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .file-upload-area {
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .file-upload-area.dragover {
+            border-color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .file-upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+
+        .upload-text {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
+        }
+
+        .uploaded-files {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .remove-file {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .link-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .link-input {
+            flex: 1;
+        }
+
+        .add-link-btn {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .links-list {
+            margin-top: 15px;
+        }
+
+        .link-item {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .link-url {
+            color: #00d4ff;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            border: none;
+            color: white;
+            padding: 18px 40px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            min-width: 200px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .validation-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">Rejoignez SM Consulting</h1>
+            <p class="subtitle">Inscription Consultant IT</p>
+            <p style="color: rgba(255,255,255,0.6);">Complétez votre profil pour rejoindre notre réseau de consultants qualifiés</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <form id="consultant-form">
+            <!-- Section 1: Informations personnelles -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    👤 Informations personnelles
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Nom <span class="required">*</span></label>
+                        <input type="text" class="form-input" name="nom" required placeholder="Votre nom">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Prénom <span class="required">*</span></label>
+                        <input type="text" class="form-input" name="prenom" required placeholder="Votre prénom">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email <span class="required">*</span></label>
+                        <input type="email" class="form-input" name="email" required placeholder="votre.email@exemple.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Téléphone <span class="required">*</span></label>
+                        <input type="tel" class="form-input" name="telephone" required placeholder="+33 1 23 45 67 89">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Localisation -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    📍 Localisation
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Pays <span class="required">*</span></label>
+                        <select class="form-select" name="pays" required>
+                            <option value="">Sélectionnez votre pays</option>
+                            <option value="France">France</option>
+                            <option value="Belgique">Belgique</option>
+                            <option value="Suisse">Suisse</option>
+                            <option value="Luxembourg">Luxembourg</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ville <span class="required">*</span></label>
+                        <input type="text" class="form-input" name="ville" required placeholder="Paris, Lyon, Bruxelles...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Profil professionnel -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    💼 Profil professionnel
+                </h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Poste recherché <span class="required">*</span></label>
+                        <select class="form-select" name="poste" required>
+                            <option value="">Sélectionnez votre spécialité</option>
+                            <option value="Développeur Full Stack">Développeur Full Stack</option>
+                            <option value="Développeur Frontend">Développeur Frontend</option>
+                            <option value="Développeur Backend">Développeur Backend</option>
+                            <option value="DevOps Engineer">DevOps Engineer</option>
+                            <option value="Data Scientist">Data Scientist</option>
+                            <option value="Data Engineer">Data Engineer</option>
+                            <option value="Architect Solution">Architect Solution</option>
+                            <option value="Chef de Projet IT">Chef de Projet IT</option>
+                            <option value="Consultant SAP">Consultant SAP</option>
+                            <option value="Consultant Salesforce">Consultant Salesforce</option>
+                            <option value="Cybersécurité">Expert Cybersécurité</option>
+                            <option value="Mobile Developer">Développeur Mobile</option>
+                            <option value="Autre">Autre (préciser)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Niveau d'expérience <span class="required">*</span></label>
+                        <select class="form-select" name="niveau" required>
+                            <option value="">Sélectionnez votre niveau</option>
+                            <option value="Junior">Junior (0-3 ans)</option>
+                            <option value="Senior">Senior (3-7 ans)</option>
+                            <option value="Expert">Expert (7-12 ans)</option>
+                            <option value="Architect">Architect/Lead (12+ ans)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">TJM souhaité (en €) <span class="required">*</span></label>
+                        <input type="number" class="form-input" name="tjm" required placeholder="750" min="200" max="2000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Disponibilité <span class="required">*</span></label>
+                        <select class="form-select" name="disponibilite" required>
+                            <option value="">Sélectionnez votre disponibilité</option>
+                            <option value="Immédiate">Immédiate</option>
+                            <option value="Dans 15 jours">Dans 15 jours</option>
+                            <option value="Dans 1 mois">Dans 1 mois</option>
+                            <option value="Dans 3 mois">Dans 3 mois</option>
+                            <option value="Sur demande">Sur demande</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Mode de travail -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    🏢 Mode de travail préféré
+                </h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="mode_travail" value="Présentiel">
+                        <span>🏢 Présentiel</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="mode_travail" value="Télétravail">
+                        <span>🏠 Télétravail complet</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="mode_travail" value="Hybride">
+                        <span>🔄 Hybride</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Section 5: Compétences -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    🛠️ Compétences techniques
+                </h2>
+                <div class="form-group full-width">
+                    <label class="form-label">Ajoutez vos compétences <span class="required">*</span></label>
+                    <div class="skills-input-container">
+                        <input type="text" class="form-input skills-input" id="skill-input" placeholder="React, Node.js, Python...">
+                        <button type="button" class="add-skill-btn" onclick="addSkill()">Ajouter</button>
+                    </div>
+                    <div class="skills-tags" id="skills-container">
+                        <!-- Les compétences ajoutées apparaîtront ici -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: CV et liens -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    📄 CV et Portfolio
+                </h2>
+                <div class="form-group full-width">
+                    <label class="form-label">Téléchargez votre CV <span class="required">*</span></label>
+                    <div class="file-upload-area" id="file-upload-area">
+                        <input type="file" class="file-upload-input" id="cv-upload" accept=".pdf,.doc,.docx" multiple>
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text">Glissez-déposez vos fichiers ici</div>
+                        <div class="upload-subtext">ou cliquez pour sélectionner (PDF, DOC, DOCX - max 5Mo)</div>
+                    </div>
+                    <div class="uploaded-files" id="uploaded-files">
+                        <!-- Les fichiers téléchargés apparaîtront ici -->
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-label">Liens portfolio (optionnel)</label>
+                    <div class="link-input-group">
+                        <select class="form-select" id="link-type" style="max-width: 150px;">
+                            <option value="Portfolio">Portfolio</option>
+                            <option value="GitHub">GitHub</option>
+                            <option value="LinkedIn">LinkedIn</option>
+                            <option value="Drive">Google Drive</option>
+                            <option value="Vercel">Vercel</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                        <input type="url" class="form-input link-input" id="link-url" placeholder="https://...">
+                        <button type="button" class="add-link-btn" onclick="addLink()">Ajouter</button>
+                    </div>
+                    <div class="links-list" id="links-container">
+                        <!-- Les liens ajoutés apparaîtront ici -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Informations supplémentaires -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    📝 Informations supplémentaires
+                </h2>
+                <div class="form-group full-width">
+                    <label class="form-label">Présentez-vous brièvement</label>
+                    <textarea class="form-textarea" name="presentation" rows="4" placeholder="Décrivez votre expérience, vos projets marquants, vos objectifs..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Certifications obtenues</label>
+                    <input type="text" class="form-input" name="certifications" placeholder="AWS Solutions Architect, Scrum Master, PMP...">
+                </div>
+            </div>
+
+            <div class="validation-message" id="validation-message">
+                <!-- Messages d'erreur apparaîtront ici -->
+            </div>
+
+            <div class="success-message" id="success-message">
+                <h3>🎉 Inscription réussie !</h3>
+                <p>Votre profil a été enregistré avec succès. Notre équipe va examiner votre candidature et vous recontactera sous 48h.</p>
+            </div>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    Soumettre ma candidature
+                </button>
+                <p style="color: rgba(255,255,255,0.6); margin-top: 15px; font-size: 0.9em;">
+                    En soumettant ce formulaire, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let skills = [];
+        let links = [];
+        let uploadedFiles = [];
+        
+        // Gestion des compétences
+        function addSkill() {
+            const input = document.getElementById('skill-input');
+            const skill = input.value.trim();
+            
+            if (skill && !skills.includes(skill)) {
+                skills.push(skill);
+                renderSkills();
+                input.value = '';
+                updateProgress();
+            }
+        }
+
+        function removeSkill(skill) {
+            skills = skills.filter(s => s !== skill);
+            renderSkills();
+            updateProgress();
+        }
+
+        function renderSkills() {
+            const container = document.getElementById('skills-container');
+            container.innerHTML = skills.map(skill => `
+                <div class="skill-tag">
+                    ${skill}
+                    <span class="remove-skill" onclick="removeSkill('${skill}')">&times;</span>
+                </div>
+            `).join('');
+        }
+
+        // Gestion des liens
+        function addLink() {
+            const typeSelect = document.getElementById('link-type');
+            const urlInput = document.getElementById('link-url');
+            const type = typeSelect.value;
+            const url = urlInput.value.trim();
+            
+            if (url && isValidUrl(url)) {
+                links.push({ type, url });
+                renderLinks();
+                urlInput.value = '';
+                updateProgress();
+            }
+        }
+
+        function removeLink(index) {
+            links.splice(index, 1);
+            renderLinks();
+            updateProgress();
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('links-container');
+            container.innerHTML = links.map((link, index) => `
+                <div class="link-item">
+                    <div>
+                        <strong>${link.type}:</strong>
+                        <a href="${link.url}" class="link-url" target="_blank">${link.url}</a>
+                    </div>
+                    <span class="remove-skill" onclick="removeLink(${index})">&times;</span>
+                </div>
+            `).join('');
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Gestion des fichiers
+        const fileUploadArea = document.getElementById('file-upload-area');
+        const fileInput = document.getElementById('cv-upload');
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                if (file.size > 5 * 1024 * 1024) { // 5MB max
+                    alert(`Le fichier ${file.name} est trop volumineux (max 5MB)`);
+                    return;
+                }
+                
+                if (!['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type)) {
+                    alert(`Format non supporté pour ${file.name}. Utilisez PDF, DOC ou DOCX.`);
+                    return;
+                }
+                
+                uploadedFiles.push(file);
+                renderUploadedFiles();
+                updateProgress();
+            });
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderUploadedFiles();
+            updateProgress();
+        }
+
+        function renderUploadedFiles() {
+            const container = document.getElementById('uploaded-files');
+            container.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <span>📄</span>
+                        <div>
+                            <div style="font-weight: 600;">${file.name}</div>
+                            <div style="font-size: 0.8em; color: rgba(255,255,255,0.6);">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                        </div>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile(${index})">×</button>
+                </div>
+            `).join('');
+        }
+
+        // Gestion de la progression
+        function updateProgress() {
+            const form = document.getElementById('consultant-form');
+            const requiredFields = form.querySelectorAll('input[required], select[required]');
+            let filledFields = 0;
+            
+            requiredFields.forEach(field => {
+                if (field.value.trim()) filledFields++;
+            });
+            
+            // Bonus pour les compétences et fichiers
+            if (skills.length > 0) filledFields++;
+            if (uploadedFiles.length > 0) filledFields++;
+            
+            const progress = Math.min(100, (filledFields / (requiredFields.length + 2)) * 100);
+            document.getElementById('progress-fill').style.width = progress + '%';
+        }
+
+        // Validation du formulaire
+        function validateForm() {
+            const errors = [];
+            
+            // Vérifications obligatoires
+            if (!document.querySelector('[name="nom"]').value.trim()) {
+                errors.push('Le nom est obligatoire');
+            }
+            
+            if (!document.querySelector('[name="email"]').value.trim()) {
+                errors.push('L\'email est obligatoire');
+            } else if (!isValidEmail(document.querySelector('[name="email"]').value)) {
+                errors.push('L\'email n\'est pas valide');
+            }
+            
+            if (skills.length === 0) {
+                errors.push('Ajoutez au moins une compétence technique');
+            }
+            
+            if (uploadedFiles.length === 0) {
+                errors.push('Téléchargez au moins votre CV');
+            }
+            
+            const selectedModes = document.querySelectorAll('[name="mode_travail"]:checked');
+            if (selectedModes.length === 0) {
+                errors.push('Sélectionnez au moins un mode de travail');
+            }
+            
+            return errors;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Soumission du formulaire
+        document.getElementById('consultant-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const errors = validateForm();
+            const validationMessage = document.getElementById('validation-message');
+            
+            if (errors.length > 0) {
+                validationMessage.innerHTML = '<strong>Erreurs détectées :</strong><ul>' + 
+                    errors.map(error => `<li>${error}</li>`).join('') + '</ul>';
+                validationMessage.style.display = 'block';
+                validationMessage.scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+            
+            validationMessage.style.display = 'none';
+            
+            // Préparer les données
+            const formData = new FormData();
+            
+            // Données du formulaire
+            const inputs = this.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    if (input.checked) {
+                        formData.append(input.name, input.value);
+                    }
+                } else if (input.name && input.value) {
+                    formData.append(input.name, input.value);
+                }
+            });
+            
+            // Compétences
+            formData.append('competences', skills.join(', '));
+            
+            // Liens
+            formData.append('liens', JSON.stringify(links));
+            
+            // Fichiers
+            uploadedFiles.forEach((file, index) => {
+                formData.append(`cv_${index}`, file);
+            });
+            
+            // Désactiver le bouton
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Envoi en cours...';
+            
+            try {
+                // Simuler l'envoi vers l'API
+                await submitToAirtableAndDrive(formData);
+                
+                // Afficher le message de succès
+                document.getElementById('success-message').style.display = 'block';
+                this.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Erreur lors de la soumission:', error);
+                validationMessage.innerHTML = '<strong>Erreur :</strong> ' + error.message;
+                validationMessage.style.display = 'block';
+                
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+
+        // Fonction pour envoyer vers Airtable et Drive
+        async function submitToAirtableAndDrive(formData) {
+            // 1. Envoyer les fichiers vers Google Drive
+            const driveUploadResult = await uploadToGoogleDrive(uploadedFiles);
+            
+            // 2. Créer l'enregistrement dans Airtable
+            const candidateData = {
+                "Nom": formData.get('nom'),
+                "Prenom": formData.get('prenom'),
+                "Courriel": formData.get('email'),
+                "Telephone": formData.get('telephone'),
+                "Pays": formData.get('pays'),
+                "Ville": formData.get('ville'),
+                "Role": formData.get('poste'),
+                "Niveau": formData.get('niveau'),
+                "TJM": parseInt(formData.get('tjm')),
+                "Disponibilite": formData.get('disponibilite'),
+                "Competences": formData.get('competences'),
+                "Stack": formData.get('competences'), // Même chose
+                "Presentation": formData.get('presentation'),
+                "Certifications": formData.get('certifications'),
+                "Liens_Portfolio": JSON.stringify(links),
+                "CV_Drive_URLs": driveUploadResult.urls.join(', '),
+                "Date_Ajout": new Date().toISOString().split('T')[0],
+                "Statut": "Nouveau candidat",
+                "Disponible": formData.get('disponibilite') === 'Immédiate' ? 'Oui' : 'Non'
+            };
+            
+            const airtableResponse = await fetch('/api/airtable', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    records: [{
+                        fields: candidateData
+                    }]
+                })
+            });
+            
+            if (!airtableResponse.ok) {
+                throw new Error('Erreur lors de l\'enregistrement dans Airtable');
+            }
+            
+            return { success: true, driveUrls: driveUploadResult.urls };
+        }
+
+        // Fonction simulée pour l'upload Google Drive
+        async function uploadToGoogleDrive(files) {
+            // Simulation de l'upload
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const urls = files.map((file, index) => 
+                        `https://drive.google.com/file/d/fake_id_${index}/view`
+                    );
+                    resolve({ urls });
+                }, 2000);
+            });
+        }
+
+        // Écouteurs pour la progression
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateProgress);
+                input.addEventListener('change', updateProgress);
+            });
+            
+            // Ajouter compétence avec Entrée
+            document.getElementById('skill-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addSkill();
+                }
+            });
+            
+            // Ajouter lien avec Entrée
+            document.getElementById('link-url').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addLink();
+                }
+            });
+            
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
