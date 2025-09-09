@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -13,101 +13,54 @@ export default async function handler(req, res) {
 
   try {
     const apiKey = process.env.AIRTABLE_API_KEY;
-    const baseId = process.env.AIRTABLE_BASE_ID;
+    const baseId = process.env.AIRTABLE_BASE_ID || 'appNwg9iP8ub0cDCn';
     const tableName = process.env.AIRTABLE_TABLE_NAME || 'Candidats';
-
-    console.log('Configuration:', {
-      hasApiKey: !!apiKey,
-      baseId: baseId,
-      tableName: tableName
-    });
 
     if (!apiKey || !baseId) {
       return res.status(500).json({
         error: 'Configuration manquante',
-        details: 'AIRTABLE_API_KEY et AIRTABLE_BASE_ID sont requis'
+        details: 'Variables environnement manquantes',
+        config: { hasApiKey: !!apiKey, baseId, tableName }
       });
     }
 
-    // Pagination pour récupérer TOUS les candidats
-    let allRecords = [];
-    let offset = null;
-    let pageCount = 0;
+    // Version simplifiée pour test
+    const encodedTableName = encodeURIComponent(tableName);
+    const apiUrl = `https://api.airtable.com/v0/${baseId}/${encodedTableName}?pageSize=100`;
 
-    do {
-      pageCount++;
-      console.log(`Récupération page ${pageCount}...`);
-      
-      const encodedTableName = encodeURIComponent(tableName);
-      let apiUrl = `https://api.airtable.com/v0/${baseId}/${encodedTableName}`;
-      
-      // Paramètres simplifiés - SANS le tri qui cause l'erreur
-      const params = new URLSearchParams({
-        pageSize: '100'
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return res.status(response.status).json({
+        error: 'Erreur Airtable',
+        status: response.status,
+        details: errorText
       });
+    }
 
-      if (offset) {
-        params.append('offset', offset);
-      }
-
-      const finalUrl = apiUrl + '?' + params.toString();
-      console.log('URL appelée:', finalUrl);
-
-      const response = await fetch(finalUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      console.log('Statut réponse:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.log('Erreur détaillée:', errorData);
-        return res.status(response.status).json({
-          error: 'Erreur Airtable',
-          status: response.status,
-          details: errorData.error || errorData,
-          url: finalUrl
-        });
-      }
-
-      const data = await response.json();
-      console.log(`Page ${pageCount}: ${data.records?.length || 0} enregistrements`);
-      
-      if (data.records && data.records.length > 0) {
-        allRecords.push(...data.records);
-      }
-
-      offset = data.offset;
-      console.log('Offset pour page suivante:', offset ? 'Oui' : 'Non');
-
-    } while (offset);
-
-    console.log(`TOTAL FINAL: ${allRecords.length} candidats récupérés`);
-
-    res.status(200).json({
-      records: allRecords,
-      _pagination: {
-        totalRecords: allRecords.length,
-        pagesProcessed: pageCount,
-        retrievalComplete: true
-      },
-      _debug: {
-        recordCount: allRecords.length,
+    const data = await response.json();
+    
+    return res.status(200).json({
+      records: data.records || [],
+      totalRecords: data.records?.length || 0,
+      message: `${data.records?.length || 0} candidats récupérés`,
+      debug: {
         timestamp: new Date().toISOString(),
-        source: 'airtable-api-paginated'
+        hasOffset: !!data.offset
       }
     });
 
   } catch (error) {
-    console.error('Erreur API Airtable:', error);
-    res.status(500).json({
-      error: 'Erreur interne du serveur',
-      details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    return res.status(500).json({
+      error: 'Erreur serveur',
+      details: error.message
     });
   }
-}
+};
