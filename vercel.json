@@ -1,18 +1,13 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 30,
-      "memory": 1024
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
-  },
-  "env": {
-    "AIRTABLE_API_KEY": "@airtable_api_key",
-    "AIRTABLE_BASE_ID": "@airtable_base_id",
-    "AIRTABLE_TABLE_NAME": "@airtable_table_name",
-    "GOOGLE_PROJECT_ID": "@google_project_id",
-    "GOOGLE_PRIVATE_KEY": "@google_private_key",
-    "GOOGLE_CLIENT_EMAIL": "@google_client_email",
-    "GOOGLE_DRIVE_PARENT_FOLDER_ID": "@google_drive_parent_folder_id"
-  }
+  ]
 }
