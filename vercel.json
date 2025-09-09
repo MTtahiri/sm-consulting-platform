@@ -5,12 +5,6 @@
       "maxDuration": 30
     }
   },
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/recruiter", "dest": "/public/recruiter-dashboard.html" },
-    { "src": "/inscription", "dest": "/public/candidate-form.html" },
-    { "src": "/(.*)", "dest": "/public/$1" }
-  ],
   "env": {
     "AIRTABLE_API_KEY": "@airtable_api_key",
     "AIRTABLE_BASE_ID": "@airtable_base_id",
