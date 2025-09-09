@@ -812,28 +812,53 @@
             }
         }
 
-        // Fonction pour convertir le format Airtable
-        function convertAirtableToConsultants(airtableRecords) {
-            if (!airtableRecords) return [];
-            
-            return airtableRecords.map(record => {
-                const fields = record.fields || {};
-                return {
-                    id: record.id,
-                    name: `${fields.Prenom || ''} ${fields.Nom || ''}`.trim() || 'Nom non spécifié',
-                    position: fields.Poste || 'Consultant IT',
-                    experience: fields.Experience || 'Information non disponible',
-                    skills: fields.Competences ? fields.Competences.split(',').map(s => s.trim()) : [],
-                    status: fields.Statut || 'Disponibilité inconnue',
-                    location: fields.Localisation || 'Non spécifié',
-                    rate: fields.TJM_Souhaite || 'NC',
-                    formation: fields.Formation || 'Formation non spécifiée',
-                    contract: fields.Type_Contrat || 'Non spécifié',
-                    level: fields.Niveau || 'Non spécifié',
-                    availability: fields.Disponibilite || 'Non spécifiée'
-                };
-            });
+// Fonction pour convertir le format Airtable avec vos vrais champs
+function convertAirtableToConsultants(airtableRecords) {
+    if (!airtableRecords) return [];
+    
+    return airtableRecords.map(record => {
+        const fields = record.fields || {};
+        
+        // Parser les compétences depuis le champ Stack ou Competences
+        let skills = [];
+        if (fields.Stack) {
+            skills = fields.Stack.split(',').map(s => s.trim()).filter(s => s);
+        } else if (fields.Competences) {
+            skills = fields.Competences.split(',').map(s => s.trim()).filter(s => s);
         }
+        
+        // Déterminer le statut de disponibilité
+        let status = 'Disponibilité inconnue';
+        if (fields.Disponible === 'Oui' || fields.Disponible === true) {
+            status = 'Disponible';
+        } else if (fields.Disponible === 'Non' || fields.Disponible === false) {
+            status = 'En mission';
+        } else if (fields.Disponibilite) {
+            status = fields.Disponibilite;
+        }
+        
+        return {
+            id: record.id,
+            name: fields.Nom || 'Nom non spécifié',
+            email: fields.Courriel || '',
+            phone: fields.Telephone || '',
+            position: fields.Role || 'Consultant IT',
+            experience: fields.Experience || 'Information non disponible',
+            skills: skills,
+            specialties: fields.Specialites || '',
+            certifications: fields.Certifications || '',
+            status: status,
+            location: fields.Localisation || 'Non spécifié',
+            rate: fields.TJM ? `${fields.TJM}€/jour` : 'NC',
+            contract: fields.TypeContrat || 'Non spécifié',
+            level: fields.Niveau || 'Non spécifié',
+            availability: fields.Disponibilite || 'Non spécifiée',
+            dateAdded: fields.Date_Ajout || '',
+            reviews: fields.Reviews || '',
+            rating: fields.Rating || 0
+        };
+    });
+}
 
         // Fonction de secours avec données locales
         function loadLocalConsultants() {
