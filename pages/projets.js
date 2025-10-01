@@ -168,7 +168,7 @@ export default function Projets() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a365d' }}>
-                    Budget estimé
+                    Budget (TJM)
                   </label>
                   <select
                     name="budget"
@@ -183,10 +183,10 @@ export default function Projets() {
                     }}
                   >
                     <option value="">Sélectionnez un budget</option>
-                    <option value="5k-10k">5 000€ - 10 000€</option>
-                    <option value="10k-25k">10 000€ - 25 000€</option>
-                    <option value="25k-50k">25 000€ - 50 000€</option>
-                    <option value="50k+">50 000€+</option>
+                    <option value="5k-10k">300-400 €</option>
+                    <option value="10k-25k">400-500 €</option>
+                    <option value="25k-50k">500-600 €</option>
+                    <option value="50k+">600+ €</option>
                   </select>
                 </div>
 
@@ -266,3 +266,4 @@ export default function Projets() {
     </>
   );
 }
+
