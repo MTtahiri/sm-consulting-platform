@@ -1,22 +1,44 @@
-# Environment variables
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.pnp.cjs
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
 .env
 .env.local
 .env.production
 
-# Google Drive config
+# vercel
+.vercel
+
+# typeScript
+*.tsbuildinfo
+
+# Google config
 google-drive-config.json
 google-credentials.json
-
-# Node modules
-node_modules/
-
-# Build files
-.next/
-out/
-dist/
-
-# Logs
-*.log
 
 # Backup files
 *.backup
