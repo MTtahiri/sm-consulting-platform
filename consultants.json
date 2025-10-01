@@ -1,0 +1,46 @@
+{
+  "consultants": [
+    {
+      "id": "rec1234567890",
+      "name": "Jean Dupont",
+      "position": "Développeur Full Stack Senior",
+      "experience": "8 ans",
+      "skills": ["React", "Node.js", "MongoDB", "Docker", "AWS"],
+      "status": "Disponible",
+      "location": "Paris",
+      "rate": "750€/jour",
+      "formation": "Master Informatique - EPITA",
+      "contract": "Freelance",
+      "level": "senior",
+      "availability": "Immédiate"
+    },
+    {
+      "id": "rec0987654321",
+      "name": "Marie Martin",
+      "position": "DevOps Architect",
+      "experience": "10 ans",
+      "skills": ["AWS", "Kubernetes", "Terraform", "Jenkins", "GitLab CI"],
+      "status": "En mission",
+      "location": "Remote",
+      "rate": "900€/jour",
+      "formation": "École d'ingénieur - CentraleSupélec",
+      "contract": "CDI/Freelance",
+      "level": "expert",
+      "availability": "Dans 1 mois"
+    },
+    {
+      "id": "rec1357924680",
+      "name": "Pierre Durand",
+      "position": "Frontend Developer",
+      "experience": "4 ans",
+      "skills": ["Vue.js", "TypeScript", "Sass", "Figmo", "Nuxt.js"],
+      "status": "Disponible",
+      "location": "Lyon",
+      "rate": "600€/jour",
+      "formation": "BTS SIO - Développement",
+      "contract": "Freelance",
+      "level": "senior",
+      "availability": "Immédiate"
+    }
+  ]
+}
