@@ -1,17 +1,28 @@
 {
   "name": "sm-consulting-platform",
   "version": "1.0.0",
+  "description": "Plateforme de recrutement IT SM Consulting",
+  "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
-    "googleapis": "^126.0.1",
-    "next": "^14.2.33",
-    "pdf-lib": "^1.17.1",
-    "pdf-parse": "^1.1.1",
+    "next": "14.0.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "mongodb": "^6.3.0",
+    "pdf-parse": "^1.1.1",
+    "nodemailer": "^6.9.7",
+    "googleapis": "^126.0.1"
+  },
+  "devDependencies": {
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
