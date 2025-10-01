@@ -1,0 +1,49 @@
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\build\segment-config
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\client\dev\hot-reloader
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\esm\build\segment-config
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\esm\client\dev\hot-reloader
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\esm\next-devtools\userspace
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\esm\server\normalizers\built
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\next-devtools\userspace
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
+    Directory: C:\Users\mohat\projets\sm-consulting-platform\node_modules\next\dist\server\normalizers\built
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d----          12/09/2025    10:22                app
+
