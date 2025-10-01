@@ -464,7 +464,7 @@ export default function HomePage() {
     <>
       <Head>
         <title>SM Consulting - Expertise IT & Recrutement d'Excellence</title>
-        <meta name="description" content=" Plateforme de recrutement IT spécialisée. Connectons les talents avec les opportunités qui transforment les entreprises." />
+        <meta name="description" content="Connectons les talents IT avec les opportunités qui transforment les entreprises. Solutions sur-mesure, réseau international, accompagnement personnalisé." />
         <meta name="keywords" content="recrutement IT, freelance, développeur, consultant, projets informatiques" />
       </Head>
 
@@ -533,16 +533,15 @@ export default function HomePage() {
       <div style={{ height: '80px' }} />
 
       {/* Hero Section - AVEC CHIFFRES RÉELS */}
-<section id="accueil" style={{ ...sectionStyle, scrollMarginTop: '80px', background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)', color: 'white' }}>
-  <div style={contentWrapperStyle}>
-    <h1 style={heroTitleStyle}>Expertise IT & Recrutement d'Excellence</h1>
-    <p style={heroTextStyle}>
-      Connectons les talents IT avec les opportunités qui transforment les entreprises.<br />
-      Solutions sur-mesure, réseau international, accompagnement personnalisé.
-    </p>
+      <section id="accueil" style={{ ...sectionStyle, scrollMarginTop: '80px', background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)', color: 'white' }}>
+        <div style={contentWrapperStyle}>
+          <h1 style={heroTitleStyle}>Expertise IT & Recrutement d'Excellence</h1>
+          <p style={heroTextStyle}>
+            Solutions sur-mesure, réseau international, accompagnement personnalisé.<br />
+                Connectons les talents IT aux opportunités transformatrices.
+          </p>
 
-    <div style={heroStatsContainerStyle}>
-
+          <div style={heroStatsContainerStyle}>
             {loading ? (
               // Pendant le chargement
               <>
@@ -604,7 +603,7 @@ export default function HomePage() {
         <div style={contentWrapperStyle}>
           <h2 style={sectionTitleStyle}>Prêt à transformer vos projets IT ?</h2>
           <p style={{ fontSize: '1.2rem', marginBottom: '2.5rem', opacity: 0.9, maxWidth: '600px', margin: '0 auto 2.5rem' }}>
-            Rejoignez notre communauté de talents et d'entreprises innovantes
+            Connectons les talents IT avec les opportunités qui transforment les entreprises
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/inscription" style={ctaButtonGreenStyle}>👨‍💻 Je suis candidat</Link>
@@ -659,6 +658,3 @@ export default function HomePage() {
     </>
   );
 }
-
-
-
