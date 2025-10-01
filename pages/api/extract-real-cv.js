@@ -1,68 +1,76 @@
-// pages/api/extract-real-cv.js
-import pdf from 'pdf-parse';
-import fs from 'fs';
-import path from 'path';
+import pdfParse from 'pdf-parse';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { pdfFileName } = req.body;
-
-  if (!pdfFileName) {
-    return res.status(400).json({ error: 'PDF filename required' });
-  }
-
   try {
-    const pdfsDirectory = path.join(process.cwd(), 'C:\\Users\\mohat\\Downloads\\Mes CVs pdf');
-    const filePath = path.join(pdfsDirectory, pdfFileName);
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'PDF file not found' });
+    const { pdfBuffer } = req.body;
+    
+    if (!pdfBuffer) {
+      return res.status(400).json({ error: 'No PDF buffer provided' });
     }
 
-    const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdf(dataBuffer);
+    // Extraction du texte du PDF
+    const data = await pdfParse(Buffer.from(pdfBuffer));
+    const text = data.text;
 
-    const extractedText = data.text;
-    const anonymizedText = applyRealAnonymization(extractedText);
-    
+    // Analyse basique des compétences
+    const skills = extractSkills(text);
+    const experience = extractExperience(text);
+
     // CV format A4 avec branding SMConsulting
-    const cvA4 = 
+    const cvA4 = `
 CV ANONYMISÉ - CONSULTANT SM CONSULTING
-
-
-
-
 
 SM CONSULTING - Votre partenaire recrutement IT
 📧 ***REMOVED*** | 📞 +33 619257588
-🌐 www.saveursmaghrebines.com
+🌐 www.sm-consulting.fr
 
+COMPÉTENCES EXTRACTES:
+${skills.join(', ')}
 
-* CV anonymisé conforme RGPD - Généré le 
-* Toutes les informations personnelles ont été supprimées
-    .trim();
+EXPÉRIENCE:
+${experience}
+
+--- Extraction automatique SM Consulting ---
+    `;
 
     res.status(200).json({
       success: true,
-      extractedText: extractedText,
-      anonymizedCV: cvA4,
-      fileName: CV_Anonyme_SM_.txt
+      extractedText: text,
+      skills: skills,
+      experience: experience,
+      formattedCV: cvA4
     });
 
   } catch (error) {
-    console.error('Erreur extraction PDF:', error);
-    res.status(500).json({ error: 'Erreur lors de l extraction du PDF' });
+    console.error('Error extracting CV:', error);
+    res.status(500).json({ 
+      error: 'Erreur lors de l extraction du CV',
+      details: error.message 
+    });
   }
 }
 
-function applyRealAnonymization(text) {
-  return text
-    .replace(/([A-Z][a-z]+)\s+([A-Z][a-z]+)/g, 'Consultant SM Consulting')
-    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '***REMOVED***')
-    .replace(/(\+33|0)[1-9](\d{2}){4}/g, '+33 619257588')
-    .replace(/(https?:\/\/)?(www\.)?linkedin\.com\/[^\s]+/g, 'www.saveursmaghrebines.com')
-    .replace(/\d+\s+[A-Za-z\s,]+(\d{5})?\s+[A-Za-z]+/g, 'Paris, France');
+function extractSkills(text) {
+  const commonSkills = [
+    'JavaScript', 'React', 'Node.js', 'Python', 'Java', 'AWS', 'Docker', 
+    'Kubernetes', 'SQL', 'MongoDB', 'TypeScript', 'Vue.js', 'Angular',
+    'PHP', 'Symfony', 'Laravel', 'C#', '.NET', 'Spring', 'React Native'
+  ];
+  
+  return commonSkills.filter(skill => 
+    text.toLowerCase().includes(skill.toLowerCase())
+  );
+}
+
+function extractExperience(text) {
+  // Logique basique d'extraction d'expérience
+  if (text.match(/\d+\+?\s*(ans|années|years)/i)) {
+    const match = text.match(/(\d+\+?\s*(ans|années|years))/i);
+    return match ? match[0] : 'Expérience non spécifiée';
+  }
+  return 'Expérience à déterminer';
 }
