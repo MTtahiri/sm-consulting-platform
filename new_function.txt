@@ -1,0 +1,64 @@
+const addToGoogleSheets = async () => {
+  if (!extractedData) {
+    setError('Aucune donnée à ajouter');
+    return;
+  }
+
+  setLoading(true);
+  setError('');
+
+  try {
+    // STRUCTURER les données selon les colonnes Google Sheets
+    const structuredData = {
+      nom: extractedData.nom || '',
+      prenom: extractedData.prenom || '',
+      email: extractedData.email || '',
+      telephone: extractedData.telephone || '',
+      competences: extractedData.competences || extractedData.skills || '',
+      annees_experience: extractedData.annees_experience || extractedData.experience || '',
+      experience_resume: extractedData.experience_resume || '',
+      formation: extractedData.formation || extractedData.education || '',
+      secteur_recherche: extractedData.secteur_recherche || '',
+      mobilite: extractedData.mobilite || '',
+      specialite: extractedData.specialite || extractedData.specialty || '',
+      niveau_expertise: extractedData.niveau_expertise || '',
+      technologies_cles: extractedData.technologies_cles || extractedData.technologies || '',
+      secteurs_experience: extractedData.secteurs_experience || '',
+      soft_skills: extractedData.soft_skills || '',
+      realisations_chiffrees: extractedData.realisations_chiffrees || '',
+      teletravail: extractedData.teletravail || '',
+      mobilite_geographique: extractedData.mobilite_geographique || '',
+      tjm_min: extractedData.tjm_min || extractedData.dailyRate || '',
+      tjm_max: extractedData.tjm_max || '',
+      disponibilite: extractedData.disponibilite || extractedData.availability || '',
+      projets_realises: extractedData.projets_realises || '',
+      pdfFileName: selectedCV // Important : inclure le nom du fichier
+    };
+
+    console.log('📤 Données structurées pour Google Sheets:', structuredData);
+    
+    const response = await fetch('/api/add-consultant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(structuredData),
+    });
+
+    const result = await response.json();
+    
+    if (response.ok) {
+      setSuccess('Consultant ajouté avec succès à Google Sheets!');
+      setTimeout(() => {
+        router.push('/candidates');
+      }, 2000);
+    } else {
+      throw new Error(result.error || 'Erreur lors de l''ajout');
+    }
+  } catch (err) {
+    console.error('❌ Erreur ajout Google Sheets:', err);
+    setError(`Erreur: ${err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};

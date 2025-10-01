@@ -1,0 +1,48 @@
+// vercel.json - Configuration Vercel
+{
+  "version": 2,
+  "name": "sm-consulting-platform",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "AIRTABLE_API_KEY": "@airtable-api-key",
+    "AIRTABLE_BASE_ID": "@airtable-base-id",
+    "AIRTABLE_TABLE_NAME": "@airtable-table-name",
+    "GOOGLE_DRIVE_CLIENT_ID": "@google-drive-client-id",
+    "GOOGLE_DRIVE_CLIENT_SECRET": "@google-drive-client-secret",
+    "GOOGLE_DRIVE_REFRESH_TOKEN": "@google-drive-refresh-token",
+    "GOOGLE_DRIVE_FOLDER_ID": "@google-drive-folder-id",
+    "SMTP_HOST": "@smtp-host",
+    "SMTP_PORT": "@smtp-port",
+    "SMTP_USER": "@smtp-user",
+    "SMTP_PASS": "@smtp-pass",
+    "CONTACT_EMAIL": "@contact-email",
+    "NEXTAUTH_SECRET": "@nextauth-secret",
+    "NEXTAUTH_URL": "@nextauth-url"
+  },
+  "functions": {
+    "pages/api/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/sync-candidates",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
