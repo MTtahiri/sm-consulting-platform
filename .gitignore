@@ -43,3 +43,4 @@ google-credentials.json
 # Backup files
 *.backup
 *.disabled
+.vercel
