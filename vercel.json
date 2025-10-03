@@ -7,6 +7,12 @@
   "redirects": [
     {
       "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "saveursmaghrebines.com"
+        }
+      ],
       "destination": "https://www.saveursmaghrebines.com/$1",
       "permanent": true
     }
