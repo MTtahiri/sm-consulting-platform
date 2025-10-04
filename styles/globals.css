@@ -1,4 +1,5 @@
 /* styles/globals.css */
+<<<<<<< HEAD
 
 /* --- Intégration Tailwind --- */
 @tailwind base;
@@ -7,10 +8,13 @@
 
 /* --- Custom global styles --- */
 
+=======
+>>>>>>> origin/main
 html,
 body {
   padding: 0;
   margin: 0;
+<<<<<<< HEAD
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
@@ -53,4 +57,44 @@ a {
 
   text-overflow: ellipsis;
   white-space: normal;
+=======
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* SM Consulting Colors */
+:root {
+  --primary-blue: #1a365d;
+  --secondary-blue: #2d3748;
+  --accent-orange: #fd7e14;
+  --accent-green: #38a169;
+  --light-bg: #f8fafc;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-orange);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e67e22;
+>>>>>>> origin/main
 }
