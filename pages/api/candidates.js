@@ -1,16 +1,6 @@
 // pages/api/candidates.js
 import { google } from 'googleapis';
 
-const auth = new google.auth.GoogleAuth({
-  credentials: {
-    client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  },
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
-
-const sheets = google.sheets({ version: 'v4', auth });
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -19,25 +9,28 @@ export default async function handler(req, res) {
   try {
     console.log('🔧 API Candidates - Début');
 
-    // Init auth et sheets À L'INTÉRIEUR du handler (lazy-load)
+    // CORRECTION : Utiliser les BONS noms de variables
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,  // CORRIGÉ
+        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),  // CORRIGÉ
       },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],  // Readonly pour la sécu
+      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
 
+    // CORRECTION : Utiliser le BON nom de variable
+    const spreadsheetId = process.env.GOOGLE_SHEET_ID;  // CORRIGÉ
+    
+    console.log('📋 Sheet ID:', spreadsheetId);
 
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: process.env.GOOGLE_SHEETS_ID,
-      range: 'consultants!A:U', // A à U pour couvrir toutes les colonnes
+      spreadsheetId: spreadsheetId,
+      range: 'consultants!A:U',
     });
 
     const rows = response.data.values;
-
     console.log('📊 Lignes reçues:', rows ? rows.length : 0);
 
     if (!rows || rows.length === 0) {
@@ -49,7 +42,7 @@ export default async function handler(req, res) {
 
     // Mapping simple des colonnes
     const getColumnData = (row, columnName) => {
-      const index = headers.findIndex(header => 
+      const index = headers.findIndex(header =>
         header.toLowerCase().includes(columnName.toLowerCase())
       );
       return index >= 0 ? row[index] || '' : '';
@@ -58,7 +51,7 @@ export default async function handler(req, res) {
     const candidates = rows.slice(1).map((row, index) => {
       return {
         id: getColumnData(row, 'id') || (index + 1).toString(),
-        titre: getColumnData(row, 'titre') || `Consultant ${index + 1}`,
+        titre: getColumnData(row, 'titre') || Consultant ,
         annees_experience: getColumnData(row, 'annees_experience'),
         competences: getColumnData(row, 'competences'),
         formation: getColumnData(row, 'formation'),
@@ -81,7 +74,6 @@ export default async function handler(req, res) {
     });
 
     console.log('✅ Candidats traités:', candidates.length);
-
     res.status(200).json(candidates);
 
   } catch (error) {
@@ -92,4 +84,3 @@ export default async function handler(req, res) {
     });
   }
 }
-
