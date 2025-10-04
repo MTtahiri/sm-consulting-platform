@@ -36,10 +36,14 @@ export default function Candidates() {
         <meta name="description" content="Découvrez nos consultants IT qualifiés : développeurs, data scientists, DevOps." />
       </Head>
 
-      {/* Compensation pour le header fixe */}
-      <div style={{ paddingTop: '80px', minHeight: '100vh', background: '#f8fafc' }}>
+      {/* OVERLAY FORCÉ pour pousser le contenu vers le bas */}
+      <div style={{ 
+        position: 'relative',
+        zIndex: 1,
+        marginTop: '80px', // FORCER la marge
+        minHeight: 'calc(100vh - 80px)'
+      }}>
         
-        {/* Votre contenu existant */}
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
           
           {/* Hero Section */}
@@ -179,6 +183,30 @@ export default function Candidates() {
           )}
         </div>
       </div>
+
+      {/* STYLE GLOBAL FORCÉ */}
+      <style jsx global>{\
+        /* Forcer le header à rester en haut */
+        header {
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          z-index: 1000 !important;
+        }
+        
+        /* Forcer le contenu principal en dessous */
+        main, .main-content {
+          margin-top: 80px !important;
+          position: relative !important;
+          z-index: 1 !important;
+        }
+
+        /* Correction pour le body */
+        body {
+          padding-top: 0 !important;
+        }
+      \}</style>
     </>
   );
 }
