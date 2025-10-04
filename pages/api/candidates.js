@@ -1,4 +1,3 @@
-// pages/api/candidates.js
 import { google } from 'googleapis';
 
 export default async function handler(req, res) {
@@ -9,26 +8,26 @@ export default async function handler(req, res) {
   try {
     console.log('🔧 API Candidates - Début');
 
-    // CORRECTION : Utiliser les BONS noms de variables
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,  // CORRIGÉ
-        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),  // CORRIGÉ
+        client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
+        // Remplace correctement les \n par de vrais retours à la ligne
+        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // CORRECTION : Utiliser le BON nom de variable
-    const spreadsheetId = process.env.GOOGLE_SHEETS_ID;  // CORRIGÉ
-    
+    const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
     console.log('📋 Sheet ID:', spreadsheetId);
 
     const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: spreadsheetId,
+      spreadsheetId,
       range: 'consultants!A:U',
     });
+
+    console.log('📊 Données brutes:', response.data);
 
     const rows = response.data.values;
     console.log('📊 Lignes reçues:', rows ? rows.length : 0);
@@ -38,9 +37,8 @@ export default async function handler(req, res) {
     }
 
     const headers = rows[0];
-    console.log('📋 En-têtes des colonnes:', headers);
+    console.log('📋 En-têtes:', headers);
 
-    // Mapping simple des colonnes
     const getColumnData = (row, columnName) => {
       const index = headers.findIndex(header =>
         header.toLowerCase().includes(columnName.toLowerCase())
@@ -51,7 +49,7 @@ export default async function handler(req, res) {
     const candidates = rows.slice(1).map((row, index) => {
       return {
         id: getColumnData(row, 'id') || (index + 1).toString(),
-        titre: getColumnData(row, 'titre') || Consultant ,
+        titre: getColumnData(row, 'titre') || "Consultant",
         annees_experience: getColumnData(row, 'annees_experience'),
         competences: getColumnData(row, 'competences'),
         formation: getColumnData(row, 'formation'),
@@ -73,7 +71,7 @@ export default async function handler(req, res) {
       };
     });
 
-    console.log('✅ Candidats traités:', candidates.length);
+    console.log('✅ Nombre de candidats traités:', candidates.length);
     res.status(200).json(candidates);
 
   } catch (error) {
