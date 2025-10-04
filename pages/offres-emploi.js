@@ -101,18 +101,20 @@ export default function OffresEmploi() {
       <div style={{ height: '80px' }} />
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
+        {/* Hero Section */}
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
           <h1 style={{ fontSize: '3rem', fontWeight: '700', color: '#1a365d', marginBottom: '1rem' }}>
             Offres d'emploi IT
           </h1>
           <p style={{ fontSize: '1.2rem', color: '#4a5568', maxWidth: '600px', margin: '0 auto' }}>
             {offres.length > 0 
-              ? ${offres.length} opportunités disponibles - Postulez en 2 minutes
+              ? offres.length + ' opportunités disponibles - Postulez en 2 minutes'
               : 'Aucune offre disponible actuellement'
             }
           </p>
         </div>
 
+        {/* Filtres - seulement si des offres existent */}
         {offres.length > 0 && (
           <div style={{ 
             background: '#f8fafc', 
@@ -167,6 +169,7 @@ export default function OffresEmploi() {
           </div>
         )}
 
+        {/* Liste des offres */}
         {offresFiltrees.length > 0 ? (
           <div style={{ display: 'grid', gap: '2rem' }}>
             {offresFiltrees.map(offre => (
@@ -223,7 +226,7 @@ export default function OffresEmploi() {
                   </div>
 
                   <Link 
-                    href={/postuler/}
+                    href={'/postuler/' + offre.id}
                     style={{
                       background: 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
                       color: 'white',
@@ -268,7 +271,7 @@ export default function OffresEmploi() {
                 )}
 
                 <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#718096' }}>
-                  {offre.date && Publiée le }
+                  {offre.date && 'Publiée le ' + new Date(offre.date).toLocaleDateString('fr-FR')}
                 </div>
               </div>
             ))}
@@ -300,6 +303,7 @@ export default function OffresEmploi() {
           </div>
         )}
 
+        {/* CTA Bottom */}
         <div style={{ 
           textAlign: 'center', 
           marginTop: '4rem',
