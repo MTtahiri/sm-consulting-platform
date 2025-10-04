@@ -43,3 +43,7 @@ google-credentials.json
 # Backup files
 *.backup
 *.disabled
+<<<<<<< HEAD
+=======
+.vercel
+>>>>>>> origin/main
