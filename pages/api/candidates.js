@@ -1,7 +1,6 @@
 // pages/api/candidates.js
 import { google } from 'googleapis';
 
-<<<<<<< HEAD
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
@@ -12,8 +11,6 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: 'v4', auth });
 
-=======
->>>>>>> origin/main
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -22,8 +19,6 @@ export default async function handler(req, res) {
   try {
     console.log('🔧 API Candidates - Début');
 
-<<<<<<< HEAD
-=======
     // Init auth et sheets À L'INTÉRIEUR du handler (lazy-load)
     const auth = new google.auth.GoogleAuth({
       credentials: {
@@ -35,7 +30,7 @@ export default async function handler(req, res) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
->>>>>>> origin/main
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEETS_ID,
       range: 'consultants!A:U', // A à U pour couvrir toutes les colonnes
@@ -96,8 +91,5 @@ export default async function handler(req, res) {
       error: error.message
     });
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main
+
