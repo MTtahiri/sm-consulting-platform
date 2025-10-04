@@ -12,8 +12,8 @@ export default async function handler(req, res) {
     // CORRECTION : Utiliser les BONS noms de variables
     const auth = new google.auth.GoogleAuth({
       credentials: {
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,  // CORRIGÉ
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),  // CORRIGÉ
+        client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,  // CORRIGÉ
+        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),  // CORRIGÉ
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     });
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     // CORRECTION : Utiliser le BON nom de variable
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID;  // CORRIGÉ
+    const spreadsheetId = process.env.GOOGLE_SHEETS_ID;  // CORRIGÉ
     
     console.log('📋 Sheet ID:', spreadsheetId);
 
