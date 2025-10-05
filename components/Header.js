@@ -10,23 +10,15 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <header style={{
-      background: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'white',
+    <header className="header-v2-fixed" style={{
+      background: 'white',
       boxShadow: '0 2px 10px rgba(26, 54, 93, 0.1)',
       position: 'fixed',
       width: '100%',
       top: 0,
       zIndex: 1000,
-      transition: 'all 0.3s ease',
-      backdropFilter: isScrolled ? 'blur(10px)' : 'none'
+      transition: 'all 0.3s ease'
     }}>
       <nav style={{
         display: 'flex',
@@ -48,87 +40,38 @@ export default function Header() {
             SM Consulting
           </div>
         </Link>
-        <ul style={{
-          display: 'flex',
-          gap: '2rem',
-          listStyle: 'none',
-          margin: 0,
-          padding: 0
-        }}>
-          <li>
-            <button onClick={() => scrollToSection('accueil')} style={{
-              color: '#4a5568',
-              textDecoration: 'none',
-              fontWeight: '500',
-              transition: 'color 0.3s',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}>Accueil</button>
-          </li>
-          <li>
-            <button onClick={() => scrollToSection('services')} style={{
-              color: '#4a5568',
-              textDecoration: 'none',
-              fontWeight: '500',
-              transition: 'color 0.3s',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}>Services</button>
-          </li>
-          <li>
-            <Link href="/projets" style={{
-              color: '#4a5568',
-              textDecoration: 'none',
-              fontWeight: '500',
-              transition: 'color 0.3s'
-            }}>Projets</Link>
-          </li>
-          <li>
-            <Link href="/candidates" style={{
-              color: '#4a5568',
-              textDecoration: 'none',
-              fontWeight: '500',
-              transition: 'color 0.3s'
-            }}>Candidats</Link>
-          </li>
-          <li>
-            <button onClick={() => scrollToSection('contact')} style={{
-              color: '#4a5568',
-              textDecoration: 'none',
-              fontWeight: '500',
-              transition: 'color 0.3s',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}>Contact</button>
-          </li>
-        </ul>
+        
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <Link href="/" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Accueil</Link>
+          <Link href="/services" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Services</Link>
+          <Link href="/projets" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Projets</Link>
+          <Link href="/candidates" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Candidats</Link>
+          <Link href="/contact" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Contact</Link>
+        </div>
+
         <div style={{ display: 'flex', gap: '12px' }}>
           <Link href="/inscription" style={{
-            background: 'linear-gradient(135deg, #38a169 0%, #2f855a 100%)',
+            background: '#38a169',
             color: 'white',
             padding: '10px 20px',
             borderRadius: '25px',
             textDecoration: 'none',
             fontWeight: '600',
-            fontSize: '14px',
-            transition: 'all 0.3s ease'
-          }}>Rejoindre</Link>
+            fontSize: '14px'
+          }}>
+            Rejoindre
+          </Link>
           <Link href="/inscription-recruteur" style={{
-            background: 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
+            background: '#fd7e14',
             color: 'white',
             padding: '10px 20px',
             borderRadius: '25px',
             textDecoration: 'none',
             fontWeight: '600',
-            fontSize: '14px',
-            transition: 'all 0.3s ease'
-          }}>Recruter</Link>
+            fontSize: '14px'
+          }}>
+            Recruter
+          </Link>
         </div>
       </nav>
     </header>
