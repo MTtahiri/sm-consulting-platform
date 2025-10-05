@@ -9,14 +9,13 @@ export default async function handler(req, res) {
     const auth = new google.auth.GoogleAuth({
       credentials: {
         client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\\\n/g, '\n'),
+        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-    
-    // Essayer de récupérer les offres
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEETS_ID,
       range: 'Offres!A:K',
@@ -25,7 +24,7 @@ export default async function handler(req, res) {
     const rows = response.data.values;
 
     if (!rows || rows.length === 0) {
-      // Retourner des offres par défaut si la feuille est vide
+      // Offres par défaut si aucune donnée
       const offresParDefaut = [
         {
           id: '1',
@@ -58,14 +57,13 @@ export default async function handler(req, res) {
     }
 
     const headers = rows[0];
-    
-    // Mapping des colonnes
+
     const offres = rows.slice(1).map((row, index) => {
       const getValue = (columnName) => {
-        const index = headers.findIndex(header => 
-          header.toLowerCase().includes(columnName.toLowerCase())
+        const indexHeader = headers.findIndex(header =>
+          header.toLowerCase() === columnName.toLowerCase()
         );
-        return index >= 0 ? row[index] || '' : '';
+        return indexHeader >= 0 ? row[indexHeader] || '' : '';
       };
 
       return {
@@ -83,15 +81,15 @@ export default async function handler(req, res) {
       };
     });
 
-    // Filtrer seulement les offres actives
+    // Filtrer les offres actives uniquement
     const offresActives = offres.filter(offre => offre.statut === 'active');
 
     res.status(200).json(offresActives);
 
   } catch (error) {
     console.error('❌ Erreur API offres:', error);
-    
-    // En cas d'erreur, retourner des offres par défaut
+
+    // Retourne offres par défaut en cas d'échec API
     const offresParDefaut = [
       {
         id: '1',
@@ -107,7 +105,7 @@ export default async function handler(req, res) {
         statut: 'active'
       }
     ];
-    
+
     res.status(200).json(offresParDefaut);
   }
 }

@@ -14,11 +14,9 @@ export default function OffresEmploi() {
       try {
         setLoading(true);
         const response = await fetch('/api/offres');
-        
         if (!response.ok) {
           throw new Error('Erreur lors du chargement des offres');
         }
-        
         const data = await response.json();
         setOffres(data);
       } catch (err) {
@@ -28,11 +26,10 @@ export default function OffresEmploi() {
         setLoading(false);
       }
     };
-
     fetchOffres();
   }, []);
 
-  // Filtres
+  // Filtres dynamiques
   const offresFiltrees = offres.filter(offre => {
     return (
       (filtreTechno === '' || offre.technologies.some(tech => 
@@ -47,13 +44,7 @@ export default function OffresEmploi() {
 
   if (loading) {
     return (
-      <div style={{ 
-        height: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        flexDirection: 'column'
-      }}>
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
         <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
         <div>Chargement des offres d'emploi...</div>
       </div>
@@ -62,14 +53,7 @@ export default function OffresEmploi() {
 
   if (error) {
     return (
-      <div style={{ 
-        height: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        flexDirection: 'column',
-        textAlign: 'center'
-      }}>
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', textAlign: 'center' }}>
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>❌</div>
         <h2 style={{ color: '#e53e3e', marginBottom: '1rem' }}>Erreur de chargement</h2>
         <p style={{ color: '#4a5568', marginBottom: '2rem' }}>{error}</p>
@@ -108,7 +92,7 @@ export default function OffresEmploi() {
           </h1>
           <p style={{ fontSize: '1.2rem', color: '#4a5568', maxWidth: '600px', margin: '0 auto' }}>
             {offres.length > 0 
-              ? offres.length + ' opportunités disponibles - Postulez en 2 minutes'
+              ? `${offres.length} opportunités disponibles - Postulez en 2 minutes`
               : 'Aucune offre disponible actuellement'
             }
           </p>
@@ -116,50 +100,25 @@ export default function OffresEmploi() {
 
         {/* Filtres - seulement si des offres existent */}
         {offres.length > 0 && (
-          <div style={{ 
-            background: '#f8fafc', 
-            padding: '2rem', 
-            borderRadius: '15px', 
-            marginBottom: '3rem',
-            display: 'flex',
-            gap: '1rem',
-            flexWrap: 'wrap'
-          }}>
+          <div style={{ background: '#f8fafc', padding: '2rem', borderRadius: '15px', marginBottom: '3rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1a365d' }}>
-                Technologies
-              </label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1a365d' }}>Technologies</label>
               <select 
                 value={filtreTechno} 
                 onChange={(e) => setFiltreTechno(e.target.value)}
-                style={{
-                  padding: '0.75rem',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  minWidth: '200px'
-                }}
-              >
+                style={{ padding: '0.75rem', border: '1px solid #e2e8f0', borderRadius: '8px', minWidth: '200px' }}>
                 <option value="">Toutes les technologies</option>
                 {toutesTechnologies.map(tech => (
                   <option key={tech} value={tech}>{tech}</option>
                 ))}
               </select>
             </div>
-
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1a365d' }}>
-                Type de contrat
-              </label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#1a365d' }}>Type de contrat</label>
               <select 
                 value={filtreType} 
                 onChange={(e) => setFiltreType(e.target.value)}
-                style={{
-                  padding: '0.75rem',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  minWidth: '200px'
-                }}
-              >
+                style={{ padding: '0.75rem', border: '1px solid #e2e8f0', borderRadius: '8px', minWidth: '200px' }}>
                 <option value="">Tous les contrats</option>
                 {tousTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
@@ -196,37 +155,19 @@ export default function OffresEmploi() {
                     🔥 URGENT
                   </span>
                 )}
-
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                   <div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1a365d', marginBottom: '0.5rem' }}>
-                      {offre.titre}
-                    </h2>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: '600', color: '#1a365d', marginBottom: '0.5rem' }}>{offre.titre}</h2>
                     <p style={{ color: '#4a5568', marginBottom: '0.5rem' }}>
                       <strong>{offre.entreprise}</strong> • {offre.localisation}
                     </p>
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                      <span style={{ 
-                        background: '#edf2f7', 
-                        padding: '0.25rem 0.75rem', 
-                        borderRadius: '15px',
-                        fontSize: '0.9rem'
-                      }}>
-                        {offre.type}
-                      </span>
-                      <span style={{ 
-                        background: '#edf2f7', 
-                        padding: '0.25rem 0.75rem', 
-                        borderRadius: '15px',
-                        fontSize: '0.9rem'
-                      }}>
-                        {offre.experience}
-                      </span>
+                      <span style={{ background: '#edf2f7', padding: '0.25rem 0.75rem', borderRadius: '15px', fontSize: '0.9rem' }}>{offre.type}</span>
+                      <span style={{ background: '#edf2f7', padding: '0.25rem 0.75rem', borderRadius: '15px', fontSize: '0.9rem' }}>{offre.experience}</span>
                     </div>
                   </div>
-
                   <Link 
-                    href={'/postuler/' + offre.id}
+                    href={`/inscription?offre=${offre.id}`}
                     style={{
                       background: 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
                       color: 'white',
@@ -240,11 +181,7 @@ export default function OffresEmploi() {
                     Postuler
                   </Link>
                 </div>
-
-                <p style={{ color: '#4a5568', lineHeight: '1.6', marginBottom: '1.5rem' }}>
-                  {offre.description}
-                </p>
-
+                <p style={{ color: '#4a5568', lineHeight: '1.6', marginBottom: '1.5rem' }}>{offre.description}</p>
                 {offre.technologies.length > 0 && (
                   <div>
                     <strong style={{ color: '#1a365d', marginBottom: '0.5rem', display: 'block' }}>
@@ -269,7 +206,6 @@ export default function OffresEmploi() {
                     </div>
                   </div>
                 )}
-
                 <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#718096' }}>
                   {offre.date && 'Publiée le ' + new Date(offre.date).toLocaleDateString('fr-FR')}
                 </div>
@@ -288,7 +224,7 @@ export default function OffresEmploi() {
             <h3 style={{ color: '#4a5568', marginBottom: '1rem' }}>Aucune offre disponible actuellement</h3>
             <p style={{ color: '#718096', marginBottom: '2rem' }}>Revenez bientôt pour découvrir de nouvelles opportunités</p>
             <Link 
-              href="/candidature-spontanee"
+              href="/inscription"
               style={{
                 background: '#fd7e14',
                 color: 'white',
@@ -304,22 +240,13 @@ export default function OffresEmploi() {
         )}
 
         {/* CTA Bottom */}
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: '4rem',
-          padding: '3rem',
-          background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)',
-          borderRadius: '15px',
-          color: 'white'
-        }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-            Vous ne trouvez pas votre profil ?
-          </h2>
+        <div style={{ textAlign: 'center', marginTop: '4rem', padding: '3rem', background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)', borderRadius: '15px', color: 'white' }}>
+          <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Vous ne trouvez pas votre profil ?</h2>
           <p style={{ fontSize: '1.1rem', marginBottom: '2rem', opacity: 0.9 }}>
             Déposez votre CV spontanément, nous vous recontacterons pour des opportunités sur mesure.
           </p>
           <Link 
-            href="/candidature-spontanee"
+            href="/inscription"
             style={{
               background: '#fd7e14',
               color: 'white',
