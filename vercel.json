@@ -9,7 +9,7 @@
   "crons": [
     {
       "path": "/api/sync-cv-drive",
-      "schedule": "0 9,17 * * *"
+      "schedule": "0 9 * * *"  // Une fois par jour à 9h
     }
   ]
 }
