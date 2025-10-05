@@ -1,18 +1,15 @@
 {
-  \"version\": 2,
-  \"builds\": [
+  "version": 2,
+  "builds": [
     {
-      \"src\": \"package.json\",
-      \"use\": \"@vercel/next\"
+      "src": "package.json",
+      "use": "@vercel/next"
     }
   ],
-  \"crons\": [
+  "crons": [
     {
-      \"path\": \"/api/sync-cv-drive\",
-      \"schedule\": \"0 9,17 * * *\"
+      "path": "/api/sync-cv-drive",
+      "schedule": "0 9,17 * * *"
     }
-  ],
-  \"env\": {
-    \"NODE_ENV\": \"production\"
-  }
+  ]
 }
