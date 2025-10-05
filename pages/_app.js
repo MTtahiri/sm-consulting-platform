@@ -5,7 +5,10 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <>
       <Header />
-      <Component {...pageProps} />
+      {/* CONTENEUR PRINCIPAL AVEC PADDING */}
+      <div style={{ paddingTop: '80px', minHeight: '100vh' }}>
+        <Component {...pageProps} />
+      </div>
     </>
   );
 }
