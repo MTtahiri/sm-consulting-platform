@@ -1,26 +1,36 @@
 // pages/api/sync-cv-drive.js
 // Synchronisation automatique CV Drive → Google Sheets pour SM Consulting
-// ADAPTÉ À VOTRE CODE EXISTANT - SYNTAXE COMMONJS
 
 const { google } = require('googleapis');
 const pdfParse = require('pdf-parse');
 
-// CONFIGURATION SM CONSULTING - Utilise vos IDs existants
-const DRIVE_FOLDER_ID = '***REMOVED***';
+// CONFIGURATION SM CONSULTING
+const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '***REMOVED***';
 const SHEET_ID = '***REMOVED***';
 const SHEET_NAME = 'consultants';
 
 module.exports = async function handler(req, res) {
+  console.log('🔐 Headers reçus:', req.headers.authorization ? 'PRÉSENT' : 'ABSENT');
+  console.log('🔐 CRON_SECRET configuré:', process.env.CRON_SECRET ? 'OUI' : 'NON');
+  
   // Sécurité : vérifier le token pour les cron jobs
   const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    console.log('❌ Authorization header manquant');
+    return res.status(401).json({ error: 'Authorization header required' });
+  }
+  
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    console.log('❌ Token invalide');
+    console.log('🔐 Reçu:', authHeader);
+    console.log('🔐 Attendu:', `Bearer ${process.env.CRON_SECRET}`);
+    return res.status(401).json({ error: 'Unauthorized - Token mismatch' });
   }
 
   try {
     console.log('🚀 SM Consulting - Démarrage synchronisation CV Drive → Sheets');
 
-    // 1. Authentification Google - Utilise VOS credentials existants
+    // 1. Authentification Google
     const auth = await getGoogleAuth();
     
     // 2. Lister les CV dans Drive
@@ -84,7 +94,7 @@ module.exports = async function handler(req, res) {
 }
 
 // ============================================================================
-// AUTHENTIFICATION GOOGLE - UTILISE VOS CREDENTIALS EXISTANTS
+// AUTHENTIFICATION GOOGLE
 // ============================================================================
 async function getGoogleAuth() {
   const auth = new google.auth.GoogleAuth({
@@ -102,7 +112,7 @@ async function getGoogleAuth() {
 }
 
 // ============================================================================
-// LISTER LES CV DEPUIS DRIVE - SIMPLIFIÉ POUR DÉPART
+// LISTER LES CV DEPUIS DRIVE
 // ============================================================================
 async function listCVFilesFromDrive(auth) {
   const drive = google.drive({ version: 'v3', auth });
@@ -111,14 +121,14 @@ async function listCVFilesFromDrive(auth) {
     q: `'${DRIVE_FOLDER_ID}' in parents and (mimeType='application/pdf') and trashed=false`,
     fields: 'files(id, name, mimeType, modifiedTime, size)',
     orderBy: 'modifiedTime desc',
-    pageSize: 10 // Limité pour les tests
+    pageSize: 10
   });
 
   return response.data.files || [];
 }
 
 // ============================================================================
-// TÉLÉCHARGER ET PARSER UN CV - RÉUTILISE VOTRE LOGIQUE EXISTANTE
+// TÉLÉCHARGER ET PARSER UN CV
 // ============================================================================
 async function downloadAndParseCV(auth, file) {
   const drive = google.drive({ version: 'v3', auth });
@@ -134,7 +144,7 @@ async function downloadAndParseCV(auth, file) {
 
     const buffer = Buffer.from(response.data);
 
-    // Parser le PDF - Utilise VOTRE logique d'extraction
+    // Parser le PDF
     const parsedData = await parsePDF(buffer);
     
     if (!parsedData.text) {
@@ -142,7 +152,7 @@ async function downloadAndParseCV(auth, file) {
       return null;
     }
 
-    // Extraire les informations du CV - Version simplifiée pour débuter
+    // Extraire les informations du CV
     const cvInfo = extractBasicCVInfo(parsedData.text, file.name);
     
     return {
@@ -158,7 +168,7 @@ async function downloadAndParseCV(auth, file) {
   }
 }
 
-// Parser PDF - RÉUTILISE VOTRE MÉTHODE EXISTANTE
+// Parser PDF
 async function parsePDF(buffer) {
   try {
     const data = await pdfParse(buffer);
@@ -173,10 +183,9 @@ async function parsePDF(buffer) {
 }
 
 // ============================================================================
-// EXTRACTION BASIQUE DES DONNÉES - ADAPTÉE À VOS BESOINS
+// EXTRACTION BASIQUE DES DONNÉES
 // ============================================================================
 function extractBasicCVInfo(text, filename) {
-  // RÉUTILISE vos fonctions existantes de extract-real-cv.js
   const skills = extractSkills(text);
   const experience = extractExperience(text);
 
@@ -241,13 +250,13 @@ function generateCVId(filename) {
 }
 
 // ============================================================================
-// INSÉRER/METTRE À JOUR DANS GOOGLE SHEETS - SIMPLIFIÉ
+// INSÉRER/METTRE À JOUR DANS GOOGLE SHEETS
 // ============================================================================
 async function upsertToSheets(auth, cvData, file) {
   const sheets = google.sheets({ version: 'v4', auth });
 
   try {
-    // Structure simplifiée pour débuter
+    // Structure simplifiée
     const rowData = [
       cvData.id,
       cvData.prenom,
@@ -260,7 +269,7 @@ async function upsertToSheets(auth, cvData, file) {
       cvData.date_ajout
     ];
 
-    // Ajouter directement (pour le MVP)
+    // Ajouter directement
     await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: `${SHEET_NAME}!A:I`,
