@@ -4,7 +4,7 @@
   "description": "Serveur de synchronisation CV Drive → Sheets",
   "main": "simple-server.js",
   "scripts": {
-    "start": "node simple-server.js",
+    "start": "node sync-server.js",
     "dev": "node simple-server.js"
   },
   "dependencies": {
@@ -13,7 +13,12 @@
     "google-spreadsheet": "^4.1.0",
     "pdf-parse": "^1.1.1"
   },
-  "keywords": ["cv", "sync", "drive", "sheets"],
+  "keywords": [
+    "cv",
+    "sync",
+    "drive",
+    "sheets"
+  ],
   "author": "SM Consulting",
   "license": "MIT"
 }
