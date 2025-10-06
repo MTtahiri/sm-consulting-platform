@@ -310,4 +310,4 @@ function findExistingConsultant(existingConsultants, file) {
 
 async function insertConsultant(sheet, data) {
   await sheet.addRow(data);
-}
+}// Dernière mise à jour: 10/06/2025 12:15:41
