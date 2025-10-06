@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "cross-env ***REMOVED*** next dev",
-    "build": "cross-env ***REMOVED*** next build",
-    "start": "node external-sync-server.js",
+    "build": "echo 'Build skipped for Render'",
+    "start": "node simple-server.js",
     "lint": "next lint"
   },
   "dependencies": {
