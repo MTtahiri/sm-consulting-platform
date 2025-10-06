@@ -6,3 +6,10 @@
     }
   ]
 }
+{
+  "dependencies": {
+    "googleapis": "^126.0.1",
+    "pdf-parse": "^1.1.1",
+    "google-spreadsheet": "^4.1.0"
+  }
+}
