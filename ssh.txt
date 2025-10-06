@@ -1,0 +1,43 @@
+https://drive.google.com/drive/u/0/folders/***REMOVED***
+
+https://docs.google.com/spreadsheets/d/***REMOVED***/edit?pli=1&gid=0#gid=0
+
+CRON_SECRET=MoGWD65tBUTeHxl0RC42vwbqFVNSJjnEP3kugZ8rLzafA9XYiy1pId7cQOKmsh
+=== NOUVEAU CRON_SECRET ===
+MoGWD65tBUTeHxl0RC42vwbqFVNSJjnEP3kugZ8rLzafA9XYiy1pId7cQOKmsh
+=== COPIEZ CE SECRET POUR VERCEL ===
+
+
+
+
+PS C:\Users\mohat\projets\sm-consulting-platform> ssh-keygen -t rsa -b 4096 -C "Votre_Email@example.com"
+>>
+Generating public/private rsa key pair.
+Enter file in which to save the key (C:\Users\mohat/.ssh/id_rsa):
+PS C:\Users\mohat\projets\sm-consulting-platform> ssh-keygen -t rsa -b 4096 -C "moa.tahiri@gmail.com"
+>>
+Generating public/private rsa key pair.
+Enter file in which to save the key (C:\Users\mohat/.ssh/id_rsa):
+Created directory 'C:\\Users\\mohat/.ssh'.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in C:\Users\mohat/.ssh/id_rsa
+Your public key has been saved in C:\Users\mohat/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:Y+iJSgK9f1vMx1ikZwD7EbDoAwkBXtzo1W9SCZxXCLg moa.tahiri@gmail.com
+The key's randomart image is:
++---[RSA 4096]----+
+|=...o *+= +.     |
+|...+ = B *       |
+| .+ o + * .      |
+| . + E + B       |
+|. . o . S +      |
+|.  . + = B       |
+|. o . o = o      |
+| o o  .. .       |
+|  . ....         |
++----[SHA256]-----+
+PS C:\Users\mohat\projets\sm-consulting-platform> cat ~/.ssh/id_rsa.pub
+>>
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDI6nM6tAiJB+rHExGjr0dZAi1qVU7/rIQpkX4kCL/CSYlKAxPSaiVlNXjeuu+KLJBny1Wygl/hfXXQh6nEcNxblNdSDZJ7yUB5eUVeDq5m5/0+W17caWMC/HqA7n5hnEtSlmqKZ8yP/fBMGG4kkMTdOeAYwDMogK3oQjgSy3LFXS4jMLIrF2rdKbooGDdpqfrR1vq4ytDTLCspYlnZSNeDFbCtmMB0l7vznCeeuNfbr6QrpCUmQHgsArx05wa8ii/gmwQpUKPZ3Usq9BOzyoCDUXyVOAUWXk7AgVAIVd79JIkvdpF9jFsXQRGoHvN5hfhVwEMBPARdpkYhhaQ9Ak5EOrI0yVED27aLMGrNIE1QumXE3bcBlrpnHeyrAH+Tvyd9XZ0+EUwy0tDKHNeqi5XkVa6CcgAjn/eNM84JrmyuxLGPXA04ZZkG4uBKHKgJQjBDJW2pEHmOuwZhGlh+hEhq1/Qp0ii0t7WE1FCjKsAVOm5LaKqwjYr8gsApYQTRtfSXTv+LxYaOswIdYgJs5THrrbYZIm+n

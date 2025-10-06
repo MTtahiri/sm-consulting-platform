@@ -4,9 +4,9 @@
   "description": "Plateforme de recrutement IT SM Consulting",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "cross-env ***REMOVED*** next dev",
+    "build": "cross-env ***REMOVED*** next build",
+    "start": "cross-env ***REMOVED*** next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -26,8 +26,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.14",
-    "eslint": "8.56.0",
-    "eslint-config-next": "14.0.3"
+    "cross-env": "^10.1.0",
+    "eslint": "^9.37.0",
+    "eslint-config-next": "^15.5.4"
   },
   "engines": {
     "node": ">=18.0.0"
