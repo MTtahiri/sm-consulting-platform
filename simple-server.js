@@ -57,3 +57,4 @@ server.listen(PORT, () => {
   console.log(`📊 Health: http://localhost:${PORT}/health`);
   console.log(`🔄 Sync: POST http://localhost:${PORT}/sync-cv-drive`);
 });
+// FORCE NEW DEPLOYMENT - Serveur opérationnel
