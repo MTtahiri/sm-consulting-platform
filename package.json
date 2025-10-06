@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env ***REMOVED*** next dev",
     "build": "cross-env ***REMOVED*** next build",
-    "start": "cross-env ***REMOVED*** next start",
+    "start": "node external-sync-server.js",
     "lint": "next lint"
   },
   "dependencies": {
