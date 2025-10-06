@@ -1,5 +1,5 @@
-// simple-server.js - SERVEUR ES MODULE
-import express from "express";
+// simple-server.js - SERVEUR COMMONJS CORRECT
+const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -16,23 +16,13 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Route sync simulée
+// Route sync
 app.post("/sync-cv-drive", (req, res) => {
   console.log("🔄 Sync simulée");
   res.json({
     success: true,
     message: "Sync simulation réussie!",
-    steps: [
-      "1. Serveur Render opérationnel",
-      "2. Variables environnement chargées", 
-      "3. Prêt pour la vraie synchronisation"
-    ],
-    env_check: {
-      has_google_email: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      has_google_key: !!process.env.GOOGLE_PRIVATE_KEY,
-      has_drive_folder: !!process.env.DRIVE_FOLDER_ID,
-      has_sheet_id: !!process.env.GOOGLE_SHEET_ID
-    },
+    steps: ["Serveur opérationnel"],
     timestamp: new Date().toISOString()
   });
 });
@@ -41,4 +31,3 @@ app.post("/sync-cv-drive", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Serveur démarré sur le port ${PORT}`);
 });
-// FORCE DEPLOY - Dernière correction
