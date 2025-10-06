@@ -1,5 +1,5 @@
-// simple-server.js - SERVEUR SIMPLE POUR RENDER
-const express = require("express");
+// simple-server.js - SERVEUR ES MODULE
+import express from "express";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
