@@ -1,97 +1,75 @@
 /* styles/globals.css */
-
-/* --- Intégration Tailwind --- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* --- Custom global styles --- */
-
-
-html,
-body {
-  padding: 0;
-  margin: 0;
-
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+/* Styles personnalisés SMConsulting */
+:root {
+  --bleu: #007BFF;
+  --orange: #FF6F00;
+  --blanc: #FFFFFF;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* --- Animations personnalisées --- */
+/* Animation de chargement */
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .animate-spin {
   animation: spin 1s linear infinite;
 }
 
-/* --- Clamp utilitaire — limiter texte à 2 lignes avec ellipsis --- */
-.line-clamp-2 {
-  display: -webkit-box;        /* Support WebKit/Blink */
-  -webkit-line-clamp: 2;       /* Limiter à 2 lignes */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-
-  /* Support moderne et Firefox */
-  display: flex;
-  flex-direction: column;
-
-  text-overflow: ellipsis;
-  white-space: normal;
-
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+/* Styles pour les cartes consultants */
+.consultant-card {
+  transition: all 0.3s ease;
+  border-left: 4px solid #f97316; /* orange-500 */
 }
 
-* {
-  box-sizing: border-box;
+.consultant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-/* SM Consulting Colors */
-:root {
-  --primary-blue: #1a365d;
-  --secondary-blue: #2d3748;
-  --accent-orange: #fd7e14;
-  --accent-green: #38a169;
-  --light-bg: #f8fafc;
+/* Badges de compétences */
+.skill-badge {
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
 }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
+.availability-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.available {
+  background-color: #dcfce7;
+  color: #166534;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.unavailable {
+  background-color: #fed7aa;
+  color: #9a3412;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--accent-orange);
-  border-radius: 4px;
+/* Couleurs personnalisées SMConsulting */
+.text-bleu {
+  color: #007BFF;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #e67e22;
+.bg-bleu {
+  background-color: #007BFF;
+}
+
+.text-orange {
+  color: #FF6F00;
+}
+
+.bg-orange {
+  background-color: #FF6F00;
 }

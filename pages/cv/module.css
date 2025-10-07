@@ -1,0 +1,83 @@
+.cvContainer {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.header {
+  border-bottom: 2px solid #FF6F00;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+}
+
+.header h1 {
+  color: #FF6F00;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.header p {
+  color: #555;
+  font-size: 14px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h2, .section h3 {
+  color: #007BFF;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.section ul li {
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.section p {
+  color: #444;
+  line-height: 1.6;
+}
+
+.footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.buttonBlue {
+  background-color: #007BFF;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.buttonOrange {
+  background-color: #FF6F00;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 18px;
+  color: #666;
+}
