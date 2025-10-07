@@ -1,0 +1,11 @@
+// pages/api/debug-env.js
+
+export default function handler(req, res) {
+  res.status(200).json({
+    env: {
+      GOOGLE_SHEET_ID: process.env.GOOGLE_SHEET_ID || null,
+      GOOGLE_SERVICE_ACCOUNT_EMAIL: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || null,
+      GOOGLE_PRIVATE_KEY_DEFINED: !!process.env.GOOGLE_PRIVATE_KEY,
+    }
+  });
+}
