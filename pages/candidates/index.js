@@ -1,174 +1,224 @@
-// pages/candidates/index.js - VERSION OPTIMISÉE
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+// pages/candidates/index.js - VERSION AVEC CHOIX D'API
+import React, { useState, useEffect } from 'react';
+import CandidateCard from '../../components/CandidateCard';
 
-export default function CandidatesPage() {
+const CandidatesPage = () => {
   const [consultants, setConsultants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    specialite: '',
+    niveau: '',
+    localisation: ''
+  });
 
+  // Récupérer les consultants - essaie l'API principale d'abord, puis backup
   useEffect(() => {
-    async function fetchConsultants() {
+    const fetchConsultants = async () => {
       try {
-        const res = await fetch('/api/consultants');
-        const data = await res.json();
-        console.log('🎯 Données reçues:', data.consultants);
-        setConsultants(data.consultants || []);
-      } catch (error) {
-        console.error('Erreur:', error);
+        setLoading(true);
+        
+        // Essayer d'abord l'API principale
+        let response = await fetch('/api/candidates');
+        let data = await response.json();
+        
+        // Si l'API principale échoue, essayer l'API backup
+        if (!data.success) {
+          console.log('🔄 API principale échoue, tentative avec API backup...');
+          response = await fetch('/api/candidates-backup');
+          data = await response.json();
+        }
+        
+        console.log('📊 Données reçues:', data);
+
+        if (data.success || Array.isArray(data)) {
+          const consultantsData = data.consultants || data;
+          console.log('✅ Consultants chargés:', consultantsData.length);
+          setConsultants(Array.isArray(consultantsData) ? consultantsData : []);
+        } else {
+          throw new Error('Aucune donnée valide reçue');
+        }
+        
+      } catch (err) {
+        console.error('💥 Erreur fetch:', err);
+        setError('Erreur de chargement: ' + err.message);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchConsultants();
   }, []);
 
+  // ... le reste du code reste identique ...
+  // Filtrer les consultants
+  const filteredConsultants = consultants.filter(consultant => {
+    return (
+      (filters.specialite === '' || consultant.specialite === filters.specialite) &&
+      (filters.niveau === '' || consultant.niveau_expertise === filters.niveau) &&
+      (filters.localisation === '' || consultant.localisation.includes(filters.localisation))
+    );
+  });
+
+  // Options pour les filtres
+  const specialites = [...new Set(consultants.map(c => c.specialite).filter(Boolean))];
+  const niveaux = [...new Set(consultants.map(c => c.niveau_expertise).filter(Boolean))];
+  const localisations = [...new Set(consultants.map(c => c.localisation).filter(Boolean))];
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 px-6 py-10 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement des experts...</p>
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement des consultants...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto px-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <strong>Erreur:</strong> {error}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 px-6 py-10">
-      {/* En-tête */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-orange-600 mb-4">
-          Nos Experts SMConsulting
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Découvrez notre réseau de consultants spécialisés pour vos projets de transformation digitale
-        </p>
-      </div>
-
-      {/* Statistiques */}
-      {consultants.length > 0 && (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container mx-auto px-4">
+        {/* En-tête */}
         <div className="text-center mb-8">
-          <p className="text-gray-600">
-            <strong>{consultants.length}</strong> consultant(s) disponible(s)
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">
+            Nos Consultants
+          </h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Découvrez notre réseau de consultants experts pour vos projets
           </p>
-        </div>
-      )}
-
-      {/* Grille des consultants */}
-      {consultants.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="bg-white rounded-xl shadow-md p-8 max-w-md mx-auto">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Aucun consultant disponible
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Commencez par ajouter vos premiers consultants via l'upload de CV.
-            </p>
-            <button
-              onClick={() => router.push('/upload-cv')}
-              className="bg-orange-500 text-white px-6 py-3 rounded-lg hover:bg-orange-600 transition font-semibold"
-            >
-              📤 Ajouter un consultant
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
-          {consultants.map((consultant) => (
-            <div
-              key={consultant.id}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-orange-500"
-            >
-              <div className="p-6">
-                {/* En-tête de la carte */}
-                <div className="flex justify-between items-start mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">
-                    {consultant.titre}
-                  </h2>
-                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                    {consultant.annees_experience} ans exp.
-                  </span>
-                </div>
-
-                {/* Informations principales */}
-                <div className="space-y-2 mb-4">
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Spécialité:</span> {consultant.specialite}
-                  </p>
-                  
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Niveau:</span> {consultant.niveau_expertise}
-                  </p>
-
-                  {consultant.technologies_cles && consultant.technologies_cles.length > 0 && (
-                    <div>
-                      <span className="font-semibold text-gray-700">Technologies:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {consultant.technologies_cles.slice(0, 4).map((tech, index) => (
-                          <span 
-                            key={index}
-                            className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        {consultant.technologies_cles.length > 4 && (
-                          <span className="text-gray-500 text-xs">
-                            +{consultant.technologies_cles.length - 4}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Localisation:</span> {consultant.mobilite_geographique}
-                  </p>
-
-                  <p className="text-gray-700">
-                    <span className="font-semibold">Disponibilité:</span> 
-                    <span className={`ml-2 px-2 py-1 rounded-full text-xs ${
-                      consultant.disponibilite.includes('Disponible') 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-orange-100 text-orange-800'
-                    }`}>
-                      {consultant.disponibilite}
-                    </span>
-                  </p>
-
-                  {(consultant.tjm_min > 0 || consultant.tjm_max > 0) && (
-                    <p className="text-gray-700">
-                      <span className="font-semibold">TJM:</span> {consultant.tjm_min}€ - {consultant.tjm_max}€
-                    </p>
-                  )}
-                </div>
-
-                {/* Bouton Voir CV */}
-                <button
-                  onClick={() => router.push(`/cv/${consultant.id}`)}
-                  className="w-full bg-orange-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-orange-600 transition duration-200 flex items-center justify-center"
-                >
-                  🧾 Voir le CV du profil
-                </button>
+          
+          {/* Compteur */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {filteredConsultants.length} consultant(s) disponible(s)
+                </h2>
+                <p className="text-gray-600">
+                  {filteredConsultants.length === consultants.length 
+                    ? 'Tous nos consultants' 
+                    : `${filteredConsultants.length} sur ${consultants.length} consultants`
+                  }
+                </p>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-      )}
 
-      {/* Call to Action */}
-      {consultants.length > 0 && (
-        <div className="text-center mt-12">
-          <button
-            onClick={() => router.push('/upload-cv')}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition font-semibold"
-          >
-            ➕ Ajouter un nouveau consultant
-          </button>
+        {/* Filtres */}
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filtrer les consultants</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Filtre Spécialité */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Spécialité
+              </label>
+              <select
+                value={filters.specialite}
+                onChange={(e) => setFilters({...filters, specialite: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value="">Toutes les spécialités</option>
+                {specialites.map(specialite => (
+                  <option key={specialite} value={specialite}>
+                    {specialite}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtre Niveau */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Niveau d'expertise
+              </label>
+              <select
+                value={filters.niveau}
+                onChange={(e) => setFilters({...filters, niveau: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value="">Tous les niveaux</option>
+                {niveaux.map(niveau => (
+                  <option key={niveau} value={niveau}>
+                    {niveau}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtre Localisation */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Localisation
+              </label>
+              <select
+                value={filters.localisation}
+                onChange={(e) => setFilters({...filters, localisation: e.target.value})}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+              >
+                <option value="">Toutes les localisations</option>
+                {localisations.map(localisation => (
+                  <option key={localisation} value={localisation}>
+                    {localisation}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Bouton reset */}
+          {(filters.specialite || filters.niveau || filters.localisation) && (
+            <div className="mt-4">
+              <button
+                onClick={() => setFilters({ specialite: '', niveau: '', localisation: '' })}
+                className="text-orange-500 hover:text-orange-600 font-medium"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Grille des consultants - 2 COLONNES */}
+        {filteredConsultants.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {filteredConsultants.map(consultant => (
+              <CandidateCard 
+                key={consultant.id} 
+                consultant={consultant} 
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              Aucun consultant trouvé
+            </h3>
+            <p className="text-gray-500">
+              Aucun consultant ne correspond à vos critères de recherche.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default CandidatesPage;

@@ -1,100 +1,72 @@
-import { google } from 'googleapis';
-
+// pages/api/offres.js - VERSION AVEC DEBUG COMPLET
 export default async function handler(req, res) {
+  console.log("🎯 API offres appelée - Méthode:", req.method);
+  
+  // Vérifier que c'est une requête GET
   if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
   try {
-    console.log('🔧 API Offres - Début');
-
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_SHEETS_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_SHEETS_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    console.log("🔄 Début traitement API offres");
+    
+    // Données d'exemple garanties
+    const offresExemple = [
+      {
+        id: "1",
+        titre: "Développeur Fullstack React/Node.js",
+        entreprise: "TechInnov",
+        type: "CDI",
+        experience: "3+ ans",
+        technologies: ["React", "Node.js", "TypeScript", "MongoDB"],
+        localisation: "Paris",
+        date: "2025-01-15",
+        description: "Rejoignez notre équipe pour développer des applications web innovantes.",
+        urgent: false,
+        statut: "active"
       },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    });
+      {
+        id: "2", 
+        titre: "Data Scientist Senior",
+        entreprise: "DataCorp",
+        type: "CDI",
+        experience: "5+ ans",
+        technologies: ["Python", "TensorFlow", "SQL", "PyTorch"],
+        localisation: "Lyon/Télétravail",
+        date: "2025-01-10",
+        description: "Créez des modèles de machine learning pour nos clients.",
+        urgent: true,
+        statut: "active"
+      }
+    ];
 
-    const sheets = google.sheets({ version: 'v4', auth });
-    const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
-    if (!spreadsheetId) {
-      console.error('❌ GOOGLE_SHEETS_ID non défini');
-      return res.status(500).json({ message: 'Spreadsheet ID not configured' });
-    }
-    console.log('📋 Sheet ID:', spreadsheetId);
+    console.log("✅ Préparation réponse avec", offresExemple.length, "offres");
 
-    // Plage : onglet "Offres", colonnes A:J (ajuste si nécessaire)
-    const range = 'Offres!A:K';
-    const response = await sheets.spreadsheets.values.get({ spreadsheetId, range });
-
-    const rows = response.data.values;
-    console.log('📊 Lignes reçues Offres:', rows ? rows.length : 0);
-
-    if (!rows || rows.length <= 1) {
-      return res.status(200).json([]); // aucune offre -> renvoyer tableau vide
-    }
-
-    const headers = rows[0].map(h => (h || '').toString().trim().toLowerCase());
-    console.log('📋 En-têtes Offres:', headers);
-
-    const findIndex = (name) => {
-      const lower = name.toLowerCase();
-      return headers.findIndex(h => h.includes(lower));
+    // Réponse JSON explicite
+    const response = {
+      success: true,
+      count: offresExemple.length,
+      offres: offresExemple,
+      timestamp: new Date().toISOString()
     };
 
-    const idx = {
-      id: findIndex('id'),
-      titre: findIndex('titre'),
-      entreprise: findIndex('entreprise'),
-      type: findIndex('type'),
-      experience: findIndex('experience'),
-      technologies: findIndex('technologies'),
-      localisation: findIndex('localisation'),
-      date: findIndex('date'),
-      description: findIndex('description'),
-      urgent: findIndex('urgent'),
-      statut: findIndex('statut'),
-    };
+    // Headers explicites pour JSON
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache');
+    
+    console.log("📤 Envoi réponse JSON");
+    res.status(200).json(response);
 
-    const parseBool = (v) => {
-      if (!v) return false;
-      const s = v.toString().trim().toLowerCase();
-      return ['1', 'true', 'yes', 'oui', 'y'].includes(s);
-    };
-
-    const offres = rows.slice(1).map((row, i) => {
-      const get = (index) => (index >= 0 ? (row[index] ?? '').toString().trim() : '');
-
-      const rawTech = get(idx.technologies);
-      const techs = rawTech ? rawTech.split(/[,;|]/).map(t => t.trim()).filter(Boolean) : [];
-
-      const dateRaw = get(idx.date);
-      const parsedDate = dateRaw ? (isNaN(Date.parse(dateRaw)) ? null : new Date(dateRaw).toISOString()) : null;
-
-      return {
-        id: get(idx.id) || (i + 1).toString(),
-        titre: get(idx.titre) || 'Offre',
-        entreprise: get(idx.entreprise) || '',
-        type: get(idx.type) || '',
-        experience: get(idx.experience) || '',
-        technologies: techs,
-        localisation: get(idx.localisation) || '',
-        date: parsedDate,
-        description: get(idx.description) || '',
-        urgent: parseBool(get(idx.urgent)),
-        statut: get(idx.statut) || 'actif',
-      };
-    });
-
-    console.log('✅ Nombre d\'offres traitées:', offres.length);
-    return res.status(200).json(offres);
   } catch (error) {
-    console.error('❌ Erreur API offres:', error);
-    return res.status(500).json({
-      message: 'Erreur lors de la récupération des offres',
-      error: process.env.NODE_ENV === 'production' ? undefined : error.message,
-      stack: process.env.NODE_ENV === 'production' ? undefined : error.stack,
+    console.error("💥 ERREUR CRITIQUE API offres:", error);
+    
+    // Réponse d'erreur en JSON
+    res.setHeader('Content-Type', 'application/json');
+    res.status(500).json({
+      success: false,
+      error: "Erreur interne du serveur",
+      message: error.message,
+      code: "API_OFFRES_ERROR"
     });
   }
 }
