@@ -1,79 +1,49 @@
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
-    <header className="header-v2-fixed" style={{
+    <header style={{
       background: 'white',
-      boxShadow: '0 2px 10px rgba(26, 54, 93, 0.1)',
+      borderBottom: '1px solid #e5e7eb',
+      padding: '1rem 0',
       position: 'fixed',
       width: '100%',
       top: 0,
-      zIndex: 1000,
-      transition: 'all 0.3s ease'
+      zIndex: 1000
     }}>
-      <nav style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '1rem 0',
+      <div style={{
         maxWidth: '1200px',
         margin: '0 auto',
-        paddingLeft: '20px',
-        paddingRight: '20px'
+        padding: '0 20px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
       }}>
-        <Link href="/" style={{ textDecoration: 'none' }}>
-          <div style={{
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            color: '#1a365d',
-            cursor: 'pointer'
-          }}>
-            SM Consulting
-          </div>
+        {/* Logo */}
+        <Link href="/" style={{ textDecoration: 'none', fontSize: '1.5rem', fontWeight: 'bold', color: '#1a365d' }}>
+          SM Consulting
         </Link>
-        
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-          <Link href="/" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Accueil</Link>
-          <Link href="/services" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Services</Link>
-          <Link href="/projets" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Projets</Link>
-          <Link href="/candidates" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Candidats</Link>
-          <Link href="/contact" style={{ color: '#4a5568', textDecoration: 'none', fontWeight: '500' }}>Contact</Link>
-        </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Link href="/inscription" style={{
-            background: '#38a169',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: '25px',
-            textDecoration: 'none',
-            fontWeight: '600',
-            fontSize: '14px'
-          }}>
+        {/* Menu */}
+        <nav style={{ display: 'flex', gap: '2rem' }}>
+          <Link href="/" style={{ color: '#4a5568', textDecoration: 'none' }}>Accueil</Link>
+          <Link href="/services" style={{ color: '#4a5568', textDecoration: 'none' }}>Services</Link>
+          <Link href="/projets" style={{ color: '#4a5568', textDecoration: 'none' }}>Projets</Link>
+          <Link href="/candidates" style={{ color: '#4a5568', textDecoration: 'none' }}>Candidats</Link>
+          <Link href="/offres-emploi" style={{ color: '#4a5568', textDecoration: 'none' }}>Offres d&apos;emploi</Link>
+          <Link href="/contact" style={{ color: '#4a5568', textDecoration: 'none' }}>Contact</Link>
+        </nav>
+
+        {/* Boutons */}
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Link href="/inscription" style={{ background: '#38a169', color: 'white', padding: '0.5rem 1rem', borderRadius: '25px', textDecoration: 'none' }}>
             Rejoindre
           </Link>
-          <Link href="/inscription-recruteur" style={{
-            background: '#fd7e14',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: '25px',
-            textDecoration: 'none',
-            fontWeight: '600',
-            fontSize: '14px'
-          }}>
+          <Link href="/inscription-recruteur" style={{ background: '#fd7e14', color: 'white', padding: '0.5rem 1rem', borderRadius: '25px', textDecoration: 'none' }}>
             Recruter
           </Link>
         </div>
-      </nav>
+      </div>
     </header>
   );
 }

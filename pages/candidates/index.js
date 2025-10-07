@@ -1,6 +1,6 @@
-// pages/candidates/index.js - VERSION AVEC CHOIX D'API
 import React, { useState, useEffect } from 'react';
 import CandidateCard from '../../components/CandidateCard';
+import DownloadCvButton from '../../components/DownloadCvButton';
 
 const CandidatesPage = () => {
   const [consultants, setConsultants] = useState([]);
@@ -12,7 +12,6 @@ const CandidatesPage = () => {
     localisation: ''
   });
 
-  // Récupérer les consultants - essaie l'API principale d'abord, puis backup
   useEffect(() => {
     const fetchConsultants = async () => {
       try {
@@ -50,7 +49,6 @@ const CandidatesPage = () => {
     fetchConsultants();
   }, []);
 
-  // ... le reste du code reste identique ...
   // Filtrer les consultants
   const filteredConsultants = consultants.filter(consultant => {
     return (
@@ -195,7 +193,7 @@ const CandidatesPage = () => {
           )}
         </div>
 
-        {/* Grille des consultants - 2 COLONNES */}
+        {/* Grille des consultants */}
         {filteredConsultants.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {filteredConsultants.map(consultant => (

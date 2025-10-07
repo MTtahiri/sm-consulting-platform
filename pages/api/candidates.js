@@ -1,5 +1,8 @@
-// pages/api/candidates.js - VERSION AVEC 221 CONSULTANTS EXACTEMENT
 export default async function handler(req, res) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
     const specialites = [
       "Développement Front-End", "Développement Back-End", "Développement Full Stack",
@@ -16,7 +19,6 @@ export default async function handler(req, res) {
     
     const sampleConsultants = [];
 
-    // Générer exactement 221 consultants
     for (let i = 1; i <= 221; i++) {
       const specialite = specialites[i % specialites.length];
       const niveau = niveaux[i % niveaux.length];
@@ -39,8 +41,6 @@ export default async function handler(req, res) {
       });
     }
 
-    console.log("✅ API retourne", sampleConsultants.length, "consultants");
-
     res.status(200).json({
       success: true,
       count: sampleConsultants.length,
@@ -53,7 +53,6 @@ export default async function handler(req, res) {
   }
 }
 
-// Helper function pour technologies par spécialité
 function getTechnologiesForSpecialite(specialite) {
   const techMap = {
     "Développement Front-End": ["React", "Vue.js", "Angular", "TypeScript", "SASS"],

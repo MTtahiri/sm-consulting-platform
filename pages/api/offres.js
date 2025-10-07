@@ -1,16 +1,11 @@
-// pages/api/offres.js - VERSION AVEC DEBUG COMPLET
-export default async function handler(req, res) {
+export default function handler(req, res) {
   console.log("🎯 API offres appelée - Méthode:", req.method);
-  
-  // Vérifier que c'est une requête GET
+
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
   try {
-    console.log("🔄 Début traitement API offres");
-    
-    // Données d'exemple garanties
     const offresExemple = [
       {
         id: "1",
@@ -26,7 +21,7 @@ export default async function handler(req, res) {
         statut: "active"
       },
       {
-        id: "2", 
+        id: "2",
         titre: "Data Scientist Senior",
         entreprise: "DataCorp",
         type: "CDI",
@@ -40,27 +35,17 @@ export default async function handler(req, res) {
       }
     ];
 
-    console.log("✅ Préparation réponse avec", offresExemple.length, "offres");
-
-    // Réponse JSON explicite
-    const response = {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.status(200).json({
       success: true,
       count: offresExemple.length,
       offres: offresExemple,
       timestamp: new Date().toISOString()
-    };
-
-    // Headers explicites pour JSON
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Cache-Control', 'no-cache');
-    
-    console.log("📤 Envoi réponse JSON");
-    res.status(200).json(response);
+    });
 
   } catch (error) {
     console.error("💥 ERREUR CRITIQUE API offres:", error);
-    
-    // Réponse d'erreur en JSON
     res.setHeader('Content-Type', 'application/json');
     res.status(500).json({
       success: false,
