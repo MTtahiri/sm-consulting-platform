@@ -43,7 +43,7 @@ async function main() {
     // Drive - Lister les CV
     const drive = google.drive({ version: 'v3', auth: authClient });
     const driveResponse = await drive.files.list({
-      q: "'***REMOVED***' in parents and mimeType='application/pdf' and trashed=false",
+      q: "'1KJclnM06u9k6ZTOqkHzSsJvduQEkvmGq' in parents and mimeType='application/pdf' and trashed=false",
       fields: 'files(id, name, mimeType, modifiedTime)',
       orderBy: 'modifiedTime desc',
       pageSize: 5
@@ -109,7 +109,7 @@ async function main() {
 
         // Insérer dans Google Sheets
         await sheets.spreadsheets.values.append({
-          spreadsheetId: process.env.GOOGLE_SHEETS_ID || '***REMOVED***',
+          spreadsheetId: process.env.GOOGLE_SHEETS_ID || '1kHfTgEdYBt8IxSbpTpGUV7wZqgp-61ULr-cauAf5z-o',
           range: 'consultants!A:H',
           valueInputOption: 'RAW',
           resource: { values: [rowData] }

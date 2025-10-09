@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const fullCV = `
 CONSULTANT IT EXPERT - SM
 
-📧 ***REMOVED*** | 📞 +33 619257588
+📧 contact@rh-prospects.fr | 📞 +33 619257588
 📍 [Adresse à compléter]
 🔖 ID Consultant: SM-[ID à compléter]
 

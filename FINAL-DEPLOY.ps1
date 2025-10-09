@@ -42,8 +42,8 @@ try {
     Write-Host "   🔒 Sécurisé par token" -ForegroundColor White
     
     Write-Host "`n🔗 LIENS IMPORTANTS :" -ForegroundColor Yellow
-    Write-Host "   📊 Google Sheets: https://docs.google.com/spreadsheets/d/***REMOVED***" -ForegroundColor Cyan
-    Write-Host "   📁 Google Drive: https://drive.google.com/drive/u/0/folders/***REMOVED***" -ForegroundColor Cyan
+    Write-Host "   📊 Google Sheets: https://docs.google.com/spreadsheets/d/1kHfTgEdYBt8IxSbpTpGUV7wZqgp-61ULr-cauAf5z-o" -ForegroundColor Cyan
+    Write-Host "   📁 Google Drive: https://drive.google.com/drive/u/0/folders/1KJclnM06u9k6ZTOqkHzSsJvduQEkvmGq" -ForegroundColor Cyan
     Write-Host "   📋 Logs Vercel: https://vercel.com/moatahiri-gmailcoms-projects/sm-consulting-platform" -ForegroundColor Cyan
     
     Write-Host "`n⏰ PROCHAINE SYNCHRO AUTO: Demain à 9h" -ForegroundColor Green

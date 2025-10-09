@@ -1,6 +1,6 @@
-https://drive.google.com/drive/u/0/folders/***REMOVED***
+https://drive.google.com/drive/u/0/folders/1KJclnM06u9k6ZTOqkHzSsJvduQEkvmGq
 
-https://docs.google.com/spreadsheets/d/***REMOVED***/edit?pli=1&gid=0#gid=0
+https://docs.google.com/spreadsheets/d/1kHfTgEdYBt8IxSbpTpGUV7wZqgp-61ULr-cauAf5z-o/edit?pli=1&gid=0#gid=0
 
 CRON_SECRET=MoGWD65tBUTeHxl0RC42vwbqFVNSJjnEP3kugZ8rLzafA9XYiy1pId7cQOKmsh
 === NOUVEAU CRON_SECRET ===

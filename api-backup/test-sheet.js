@@ -1,7 +1,7 @@
 // pages/api/test-sheet.js - VERSION CORRIGÉE
 export default async function handler(req, res) {
   try {
-    const SHEET_ID = '***REMOVED***';
+    const SHEET_ID = '1kHfTgEdYBt8IxSbpTpGUV7wZqgp-61ULr-cauAf5z-o';
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Base_Candidats_Optimisee_2025`; // ← NOM CORRIGÉ
     
     console.log('🔗 URL testée:', SHEET_URL);

@@ -637,7 +637,7 @@ export default function HomePage() {
 
               {/* Infos Contact */}
               <div style={contactInfoStyle}>
-                <div style={contactInfoItemStyle}><strong>Email :</strong> ***REMOVED***</div>
+                <div style={contactInfoItemStyle}><strong>Email :</strong> contact@rh-prospects.fr</div>
                 <div style={contactInfoItemStyle}><strong>Téléphone :</strong> +33 6 19 25 75 88</div>
                 <div style={contactInfoItemStyle}><strong>Adresse :</strong> 13 rue Gustave Eiffel, Clichy</div>
               </div>

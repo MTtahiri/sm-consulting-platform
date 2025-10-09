@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     // Test Drive
     const drive = google.drive({ version: 'v3', auth: authClient });
     const driveResponse = await drive.files.list({
-      q: "'***REMOVED***' in parents and mimeType='application/pdf'",
+      q: "'1KJclnM06u9k6ZTOqkHzSsJvduQEkvmGq' in parents and mimeType='application/pdf'",
       fields: 'files(id, name)',
       pageSize: 3
     });

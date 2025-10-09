@@ -3,11 +3,11 @@ import nodemailer from 'nodemailer';
 
 // Configuration email (à adapter selon votre fournisseur)
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || '***REMOVED***',
-  port: ***REMOVED***,
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: 587,
   secure: false,
   auth: {
-    user: process.env.SMTP_USER || '***REMOVED***',
+    user: process.env.SMTP_USER || 'contact@rh-prospects.fr',
     pass: process.env.SMTP_PASS || 'your-email-password'
   }
 });
@@ -84,7 +84,7 @@ const getConfirmationEmailTemplate = (recruteurData) => {
         <p style="color: #4a5568; margin-bottom: 15px;">Notre équipe est à votre disposition :</p>
         <p style="color: #1a365d;">
             <strong>📞 +33 6 19 25 75 88</strong><br>
-            <strong>✉️ ***REMOVED***</strong>
+            <strong>✉️ contact@rh-prospects.fr</strong>
         </p>
     </div>
 
@@ -218,7 +218,7 @@ export default async function handler(req, res) {
     // Envoi email de confirmation au recruteur
     try {
       await transporter.sendMail({
-        from: '"SM Consulting" <***REMOVED***>',
+        from: '"SM Consulting" <contact@rh-prospects.fr>',
         to: recruteurData.email,
         subject: '🎉 Inscription validée - Accès recruteur SM Consulting',
         html: getConfirmationEmailTemplate(recruteurData)
@@ -233,7 +233,7 @@ export default async function handler(req, res) {
     try {
       await transporter.sendMail({
         from: '"SM Consulting System" <noreply@rh-prospects.fr>',
-        to: '***REMOVED***',
+        to: 'contact@rh-prospects.fr',
         subject: `🔔 Nouvelle inscription recruteur: ${recruteurData.entreprise}`,
         html: getInternalNotificationTemplate(recruteurData)
       });

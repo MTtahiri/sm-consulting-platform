@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     res.status(500).json({
       success: false,
       error: error.message,
-      suggestion: 'Partagez le Sheet avec: ***REMOVED***'
+      suggestion: 'Partagez le Sheet avec: service-account-smc@sm-consulting-platform.iam.gserviceaccount.com'
     });
   }
 }

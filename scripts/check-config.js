@@ -114,8 +114,8 @@ console.log('');
 if (!process.env.SMTP_USER) {
   console.log('📧 Configurez vos paramètres SMTP:');
   console.log('   Créez un fichier .env.local avec:');
-  console.log('   ***REMOVED***');
-  console.log('   ***REMOVED***');
+  console.log('   SMTP_HOST=smtp.gmail.com');
+  console.log('   SMTP_PORT=587');
   console.log('   SMTP_USER=votre@email.com');
   console.log('   SMTP_PASS=votre_mot_de_passe');
   console.log('   ADMIN_EMAIL=admin@smconsulting.fr');
@@ -150,8 +150,8 @@ if (process.env.SMTP_USER && process.env.SMTP_PASS) {
   const nodemailer = require('nodemailer');
   
   const transporter = nodemailer.createTransporter({
-    host: process.env.SMTP_HOST || '***REMOVED***',
-    port: process.env.SMTP_PORT || ***REMOVED***,
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: process.env.SMTP_PORT || 587,
     secure: false,
     auth: {
       user: process.env.SMTP_USER,

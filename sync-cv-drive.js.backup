@@ -5,8 +5,8 @@ const { google } = require('googleapis');
 const pdfParse = require('pdf-parse');
 
 // CONFIGURATION SM CONSULTING
-const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '***REMOVED***';
-const SHEET_ID = '***REMOVED***';
+const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '1KJclnM06u9k6ZTOqkHzSsJvduQEkvmGq';
+const SHEET_ID = '1kHfTgEdYBt8IxSbpTpGUV7wZqgp-61ULr-cauAf5z-o';
 const SHEET_NAME = 'consultants';
 
 module.exports = async function handler(req, res) {

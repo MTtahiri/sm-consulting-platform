@@ -30,7 +30,7 @@ export default function ConsultantCV() {
   return (
     <div className="max-w-4xl mx-auto bg-white p-8 shadow-lg rounded-lg mt-10">
       <h1 className="text-2xl font-bold text-orange-600 mb-2">🧾 CV CONSULTANT — SMCONSULTING</h1>
-      <p className="text-sm text-gray-600 mb-6">📍 Paris | 📧 ***REMOVED***</p>
+      <p className="text-sm text-gray-600 mb-6">📍 Paris | 📧 contact@rh-prospects.fr</p>
 
       <h2 className="text-xl font-semibold text-blue-700 mb-4">🧑‍💼 CONSULTANT ANONYME</h2>
 

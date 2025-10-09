@@ -4,8 +4,8 @@ import nodemailer from 'nodemailer';
 const getTransporter = (provider = 'custom') => {
   const configs = {
     gmail: {
-      host: '***REMOVED***',
-      port: ***REMOVED***,
+      host: 'smtp.gmail.com',
+      port: 587,
       secure: false,
       auth: {
         user: process.env.GMAIL_USER,
@@ -14,7 +14,7 @@ const getTransporter = (provider = 'custom') => {
     },
     outlook: {
       host: 'smtp.office365.com',
-      port: ***REMOVED***,
+      port: 587,
       secure: false,
       auth: {
         user: process.env.OUTLOOK_USER,

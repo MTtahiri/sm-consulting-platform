@@ -470,7 +470,7 @@ export default function Tests() {
                   <p><strong>Variables d'environnement requises :</strong></p>
                   <ul>
                     <li><code>SMTP_HOST</code> - Serveur SMTP</li>
-                    <li><code>SMTP_PORT</code> - Port (***REMOVED*** ou 465)</li>
+                    <li><code>SMTP_PORT</code> - Port (587 ou 465)</li>
                     <li><code>SMTP_USER</code> - Nom d'utilisateur</li>
                     <li><code>SMTP_PASS</code> - Mot de passe</li>
                   </ul>

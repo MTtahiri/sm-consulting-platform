@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 CV ANONYMISÉ - CONSULTANT SM CONSULTING
 
 SM CONSULTING - Votre partenaire recrutement IT
-📧 ***REMOVED*** | 📞 +33 619257588
+📧 contact@rh-prospects.fr | 📞 +33 619257588
 🌐 www.sm-consulting.fr
 
 COMPÉTENCES EXTRACTES:
