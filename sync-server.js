@@ -1,88 +1,145 @@
-// sync-server.js - SERVEUR DE SYNCHRONISATION RÉEL
-const express = require("express");
-const { google } = require("googleapis");
-const { GoogleSpreadsheet } = require("google-spreadsheet");
-const app = express();
-const PORT = process.env.PORT || 3001;
+// sync-server.js - API COMPLÈTE POUR RENDER
+const { GoogleSpreadsheet } = require('google-spreadsheet');
+const express = require('express');
+const cors = require('cors');
 
+const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Configuration Google
-const getGoogleAuth = () => {
-  const credentials = {
-    client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-  };
-  return new google.auth.GoogleAuth({
-    credentials,
-    scopes: [
-      'https://www.googleapis.com/auth/drive.readonly',
-      'https://www.googleapis.com/auth/spreadsheets'
-    ]
-  });
-};
-
-// Routes
-app.get("/health", (req, res) => {
-  res.json({ 
-    status: "OK", 
-    service: "SM Consulting Sync - PRODUCTION",
-    timestamp: new Date().toISOString(),
-    ready: true
+// Route principale - Page d'accueil de l'API
+app.get('/', (req, res) => {
+  res.json({
+    message: '🚀 API SM Consulting - Synchronisation Google Sheets',
+    version: '1.0.0',
+    endpoints: {
+      consultants: '/consultants',
+      health: '/health'
+    }
   });
 });
 
-app.post("/sync-cv-drive", async (req, res) => {
+// Route santé
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'API Google Sheets opérationnelle',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ROUTE CONSULTANTS - Récupère tous les consultants depuis Google Sheets
+app.get('/consultants', async (req, res) => {
   try {
-    console.log("🔄 Démarrage synchronisation Drive → Sheets...");
+    console.log('🔗 Début récupération consultants...');
     
-    // 1. Vérification des variables
-    const auth = getGoogleAuth();
-    const driveFolderId = process.env.DRIVE_FOLDER_ID;
-    const sheetId = process.env.GOOGLE_SHEET_ID;
-    
-    if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) {
-      throw new Error("GOOGLE_SERVICE_ACCOUNT_EMAIL manquant");
+    // Vérifier les variables d'environnement
+    if (!process.env.GOOGLE_SHEET_ID) {
+      throw new Error('GOOGLE_SHEET_ID manquant dans les variables d\'environnement');
     }
+    if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) {
+      throw new Error('GOOGLE_SERVICE_ACCOUNT_EMAIL manquant');
+    }
+    if (!process.env.GOOGLE_PRIVATE_KEY) {
+      throw new Error('GOOGLE_PRIVATE_KEY manquant');
+    }
+
+    console.log('📊 Connexion à Google Sheets...');
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
     
-    // 2. Scan Drive (simulation pour l'instant)
-    const drive = google.drive({ version: 'v3', auth });
-    const driveResponse = await drive.files.list({
-      q: `'${driveFolderId}' in parents and trashed=false`,
-      fields: 'files(id, name)',
-      pageSize: 5
+    await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    });
+
+    await doc.loadInfo();
+    console.log('✅ Google Sheets connecté:', doc.title);
+    
+    // Lister tous les onglets disponibles
+    console.log('📑 Onglets disponibles:');
+    doc.sheetsByTitle.forEach((sheet, title) => {
+      console.log(`   - ${title}`);
     });
     
-    const files = driveResponse.data.files || [];
+    // Utiliser l'onglet "consultants"
+    let sheet;
+    if (doc.sheetsByTitle['consultants']) {
+      sheet = doc.sheetsByTitle['consultants'];
+      console.log('🎯 Utilisation de l\'onglet "consultants"');
+    } else {
+      // Fallback sur le premier onglet
+      sheet = doc.sheetsByIndex[0];
+      console.log('⚠️  Onglet "consultants" non trouvé, utilisation du premier onglet:', sheet.title);
+    }
+
+    const rows = await sheet.getRows();
+    console.log(`📈 ${rows.length} lignes trouvées dans l'onglet`);
     
-    // 3. Résultats
-    const result = {
+    // Afficher les en-têtes de colonnes pour debug
+    if (rows.length > 0) {
+      console.log('🏷️  Colonnes disponibles:', Object.keys(rows[0].toObject()));
+    }
+
+    // Transformer les données
+    const consultants = rows.map((row, index) => {
+      const rowData = row.toObject();
+      console.log(`📝 Ligne ${index + 1}:`, rowData);
+      
+      return {
+        id: rowData.id || `consultant-${index + 1}`,
+        titre: rowData.titre || 'Consultant IT',
+        competences: rowData.competences ? 
+          rowData.competences.split(',').map(s => s.trim()).filter(Boolean) : [],
+        annees_experience: parseInt(rowData.annees_experience) || 0,
+        specialite: rowData.specialite || 'Développement',
+        niveau_expertise: rowData.niveau_expertise || 'Confirmé',
+        technologies_cles: rowData.technologies_cles ? 
+          rowData.technologies_cles.split(',').map(s => s.trim()).filter(Boolean) : [],
+        tjm_min: parseInt(rowData.tjm_min) || 400,
+        tjm_max: parseInt(rowData.tjm_max) || 800,
+        disponibilite: rowData.disponibilite || 'Immédiate',
+        mobilite_geographique: rowData.mobilite_geographique || 'Île-de-France',
+        experience_resume: rowData.experience_resume || '',
+        formation: rowData.formation || '',
+        // Données brutes pour debug
+        _raw: rowData
+      };
+    });
+
+    console.log(`✅ ${consultants.length} consultants transformés`);
+
+    res.json({
       success: true,
-      message: `Synchronisation réussie! ${files.length} fichiers trouvés`,
-      files_found: files.length,
-      files: files.map(f => f.name),
-      steps: [
-        "1. ✅ Authentification Google réussie",
-        "2. ✅ Scan Drive réussi", 
-        "3. ✅ Prêt pour insertion Sheets"
-      ],
-      next: "Insertion dans Google Sheets à implémenter",
+      count: consultants.length,
+      consultants: consultants,
+      source: 'Google Sheets - Onglet consultants',
       timestamp: new Date().toISOString()
-    };
-    
-    res.json(result);
-    
+    });
+
   } catch (error) {
-    console.error("❌ Erreur synchronisation:", error);
-    res.status(500).json({ 
+    console.error('❌ ERREUR CRITIQUE:', error.message);
+    console.error('Stack:', error.stack);
+    
+    res.status(500).json({
       success: false,
       error: error.message,
-      step: "synchronisation"
+      stack: process.env.NODE_ENV === 'production' ? undefined : error.stack,
+      details: 'Vérifiez les variables d\'environnement et les permissions Google Sheets'
     });
   }
 });
 
+// Gestion des erreurs 404
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Route non trouvée',
+    availableRoutes: ['/', '/health', '/consultants']
+  });
+});
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur de synchronisation PRODUCTION démarré sur le port ${PORT}`);
-  console.log("✅ Prêt pour la synchronisation CV Drive → Google Sheets");
+  console.log(`🚀 API SM Consulting démarrée sur le port ${PORT}`);
+  console.log(`📊 URL: http://localhost:${PORT}`);
+  console.log(`🔍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
