@@ -10,7 +10,7 @@ Write-Host "✅ Déploiement terminé" -ForegroundColor Green
 # 2. TEST SYNCHRONISATION
 Write-Host "`n🎯 Étape 2: Test synchronisation..." -ForegroundColor Cyan
 $URL = "https://sm-consulting-platform-o2h8mqv7d-moatahiri-gmailcoms-projects.vercel.app"
-$SECRET = "SM_CONSULTING_2024_CV_SYNC_20251005"
+$SECRET = "SM-CV-SYNC-2024"
 
 Write-Host "🔐 Utilisation du CRON_SECRET configuré" -ForegroundColor Yellow
 
@@ -56,6 +56,6 @@ try {
     if ($_.Exception.Message -like "*401*") {
         Write-Host "`n🔐 PROBLÈME D'AUTHENTIFICATION" -ForegroundColor Yellow
         Write-Host "Vérifiez que le CRON_SECRET dans Vercel correspond exactement à:" -ForegroundColor White
-        Write-Host "SM_CONSULTING_2024_CV_SYNC_20251005" -ForegroundColor Cyan
+        Write-Host "SM-CV-SYNC-2024" -ForegroundColor Cyan
     }
 }

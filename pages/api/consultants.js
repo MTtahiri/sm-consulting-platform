@@ -1,97 +1,99 @@
-// pages/api/consultants.js - API Google Sheets pour Next.js
+// pages/api/consultants.js - VERSION MODERNE
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 
 export default async function handler(req, res) {
-  // Autoriser CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Méthode non autorisée' });
-  }
-
   try {
-    console.log('🔗 Début récupération consultants depuis Google Sheets...');
-    
-    // Vérifier les variables d'environnement
-    if (!process.env.GOOGLE_SHEET_ID) {
-      throw new Error('GOOGLE_SHEET_ID manquant');
-    }
-    if (!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL) {
-      throw new Error('GOOGLE_SERVICE_ACCOUNT_EMAIL manquant');
-    }
-    if (!process.env.GOOGLE_PRIVATE_KEY) {
-      throw new Error('GOOGLE_PRIVATE_KEY manquant');
+    console.log('🚀 DÉMARRAGE API consultants...');
+
+    const sheetId = process.env.GOOGLE_SHEET_ID;
+    const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    const privateKey = process.env.GOOGLE_PRIVATE_KEY;
+
+    if (!sheetId || !clientEmail || !privateKey) {
+      throw new Error('Variables manquantes: ' + 
+        [!sheetId && 'GOOGLE_SHEET_ID', 
+         !clientEmail && 'GOOGLE_SERVICE_ACCOUNT_EMAIL', 
+         !privateKey && 'GOOGLE_PRIVATE_KEY'].filter(Boolean).join(', '));
     }
 
-    console.log('📊 Connexion à Google Sheets...');
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
+    console.log('🔐 Authentification JWT...');
     
-    await doc.useServiceAccountAuth({
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    // CORRECTION : Syntaxe moderne avec JWT direct
+    const auth = new JWT({
+      email: clientEmail,
+      key: privateKey.replace(/\\n/g, '\n'),
+      scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive.file',
+      ],
     });
 
-    await doc.loadInfo();
-    console.log('✅ Google Sheets connecté:', doc.title);
+    console.log('📊 Initialisation Google Sheets...');
+    const doc = new GoogleSpreadsheet(sheetId, auth);
     
-    // Utiliser l'onglet "consultants"
-    let sheet;
-    if (doc.sheetsByTitle['consultants']) {
-      sheet = doc.sheetsByTitle['consultants'];
-      console.log('🎯 Utilisation de l\'onglet "consultants"');
-    } else {
-      sheet = doc.sheetsByIndex[0];
-      console.log('⚠️  Onglet "consultants" non trouvé, utilisation du premier onglet:', sheet.title);
+    console.log('✅ Chargement des informations...');
+    await doc.loadInfo();
+    
+    console.log('📑 Titre du document:', doc.title);
+    console.log('📋 Feuilles disponibles:', Object.keys(doc.sheetsByTitle));
+    
+    const sheet = doc.sheetsByTitle['consultants'];
+    if (!sheet) {
+      const availableSheets = Object.keys(doc.sheetsByTitle);
+      throw new Error(`Feuille "consultants" non trouvée. Feuilles disponibles: ${availableSheets.join(', ')}`);
     }
 
+    console.log('📄 Chargement des lignes...');
     const rows = await sheet.getRows();
-    console.log(`📈 ${rows.length} lignes trouvées`);
-    
-    // Transformer les données
+    console.log(`🎯 ${rows.length} lignes de données trouvées!`);
+
     const consultants = rows.map((row, index) => {
-      const rowData = row.toObject();
-      
+      const titre = row.get('titre') || '';
+      const mots = titre.split(' ').filter(word => word.length > 0);
+      const initials = mots.length >= 2 
+        ? (mots[0].charAt(0) + mots[1].charAt(0)).toUpperCase()
+        : mots.length === 1 
+          ? mots[0].charAt(0).toUpperCase()
+          : '';
+
       return {
-        id: rowData.id || `consultant-${index + 1}`,
-        titre: rowData.titre || 'Consultant IT',
-        competences: rowData.competences ? 
-          rowData.competences.split(',').map(s => s.trim()).filter(Boolean) : [],
-        annees_experience: parseInt(rowData.annees_experience) || 0,
-        specialite: rowData.specialite || 'Développement',
-        niveau_expertise: rowData.niveau_expertise || 'Confirmé',
-        technologies_cles: rowData.technologies_cles ? 
-          rowData.technologies_cles.split(',').map(s => s.trim()).filter(Boolean) : [],
-        tjm_min: parseInt(rowData.tjm_min) || 400,
-        tjm_max: parseInt(rowData.tjm_max) || 800,
-        disponibilite: rowData.disponibilite || 'Immédiate',
-        mobilite_geographique: rowData.mobilite_geographique || 'Île-de-France'
+        id: row.get('id') || `consultant-${index + 1}`,
+        initials,
+        titre: titre,
+        competences: row.get('competences')?.split(',').map(s => s.trim()) || [],
+        annees_experience: parseInt(row.get('annees_experience')) || 0,
+        experience: row.get('experience') || row.get('experience_resume') || '',
+        formation: row.get('formation') || '',
+        mobilite: row.get('mobilite') || row.get('mobilite_geographique') || '',
       };
     });
 
-    console.log(`✅ ${consultants.length} consultants transformés`);
-
-    res.status(200).json({
-      success: true,
-      count: consultants.length,
-      consultants: consultants,
-      timestamp: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('❌ ERREUR API consultants:', error.message);
+    console.log(`✅ ${consultants.length} consultants transformés!`);
     
-    res.status(500).json({
-      success: false,
+    res.status(200).json({ 
+      success: true, 
+      count: consultants.length,
+      consultants,
+      message: `🎉 ${consultants.length} consultants chargés depuis Google Sheets!`
+    });
+    
+  } catch (error) {
+    console.error('❌ ERREUR DÉTAILLÉE:', error);
+    
+    let solution = '';
+    if (error.message.includes('invalid_grant')) {
+      solution = 'Le Google Sheet doit être partagé avec: ' + process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
+    } else if (error.message.includes('not found')) {
+      solution = 'Vérifiez le GOOGLE_SHEET_ID dans les variables d\'environnement';
+    } else {
+      solution = 'Vérifiez la configuration Google Sheets';
+    }
+
+    res.status(500).json({ 
+      success: false, 
       error: error.message,
-      details: 'Vérifiez les variables d\'environnement Google Sheets'
+      solution: solution
     });
   }
 }

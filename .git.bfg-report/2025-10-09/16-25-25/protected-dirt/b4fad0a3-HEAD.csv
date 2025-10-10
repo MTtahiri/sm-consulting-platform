@@ -1,0 +1,11 @@
+02d58c257df482bb5baa99946fbd714849e3a5a2,MODIFY,regular-file,.env.example,320,6
+af6c40160d6b05b7f9f65046c4e5072fffab31e5,MODIFY,regular-file,.env.local,4155,4-7;10;14;16;32;34-35
+d218c36a0c3b2d9a7f8a52a630be5c6b6b48c820,MODIFY,regular-file,FINAL-DEPLOY.ps1,3438,45
+369698858dfa4ce7a4e5d1ae11ee31c24cf003a0,MODIFY,regular-file,api-backup/sync-cv-drive-debug.js,2379,6
+95cae413fa301165158140d04d943263258d1df0,MODIFY,regular-file,api-backup/sync-cv-drive.js,8552,9
+ae56dcd09d2088b1d863b5c51419112119e88dc8,MODIFY,regular-file,api-backup/test-sheet.js,1218,4
+51a597c3af8d83d49d8b00e651e0b071611ee3c6,MODIFY,regular-file,api-backup/test-sync.js,1608,6
+ab55c78b45d30502977e4c9b96e76063ffe92039,MODIFY,regular-file,scripts/check-config.js,4994,117-118
+eace0e3d9792f2a74d03c5eb599d2a1bc79734fc,MODIFY,regular-file,scripts/cv-sync.js,5515,112
+fcafabe81b0d9ca44d9f01daa7c311e6413d7681,MODIFY,regular-file,ssh.txt,2066,3
+95cae413fa301165158140d04d943263258d1df0,MODIFY,regular-file,sync-cv-drive.js.backup,8552,9
