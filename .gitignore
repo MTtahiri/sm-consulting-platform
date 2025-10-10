@@ -47,4 +47,7 @@ uploads/
 .cache/
 coverage/
 .env
-google-drive-config.json
+google-drive-config.json*.json
+service-account*
+credentials*
+.env.local
