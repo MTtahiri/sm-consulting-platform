@@ -33,3 +33,4 @@ La plateforme est disponible à l'adresse: [Lien Vercel]
 
 Les données sont accessibles via l'API GitHub :
 `https://api.github.com/repos/[username]/sm-consulting-platform/contents/consultants.json`
+ 
