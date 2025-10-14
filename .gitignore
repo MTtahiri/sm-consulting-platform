@@ -11,3 +11,5 @@ tmp/
 .env
 uploads/
 tmp/
+.env.local
+.env
