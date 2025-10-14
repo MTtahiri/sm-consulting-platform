@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.watchOptions = {
@@ -9,12 +10,14 @@ const nextConfig = {
           '**/swapfile.sys',
           '**/DumpStack.log.tmp',
           '**/System Volume Information',
-          '**/hiberfil.sys'
+          '**/hiberfil.sys',
         ],
       };
     }
     return config;
   },
+
+  serverExternalPackages: ['pdf-parse'],
 };
 
 module.exports = nextConfig;

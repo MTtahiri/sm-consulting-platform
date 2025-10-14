@@ -1,4 +1,4 @@
-// pages/inscription.js - AVEC TOUTES LES SPÉCIALITÉS ET TJM
+﻿// pages/inscription.js - VERSION ADAPTÉE AVEC AIRTABLE + STOCKAGE D:
 import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ export default function Inscription() {
     message: '', cvFile: null
   });
   const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -25,26 +26,78 @@ export default function Inscription() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
+    setUploadResult(null);
+
     try {
-      if (formData.cvFile) {
-        const uploadFormData = new FormData();
-        uploadFormData.append('cvFile', formData.cvFile);
-        uploadFormData.append('candidateData', JSON.stringify(formData));
-        await fetch('/api/upload-cv', { method: 'POST', body: uploadFormData });
+      // Validation du fichier
+      if (!formData.cvFile) {
+        throw new Error('Veuillez sélectionner un fichier CV');
       }
-      alert('🎉 Candidature envoyée avec succès ! Nous étudierons votre profil sous 48h.');
+
+      if (formData.cvFile.type !== 'application/pdf') {
+        throw new Error('Veuillez sélectionner un fichier PDF');
+      }
+
+      if (formData.cvFile.size > 10 * 1024 * 1024) {
+        throw new Error('Le fichier est trop volumineux (max 10MB)');
+      }
+
+      // Préparation des données pour Airtable
+      const [prenom, ...nomParts] = formData.name.split(' ');
+      const nom = nomParts.join(' ');
+
+      const consultantData = {
+        prenom: prenom || formData.name,
+        nom: nom || '',
+        email: formData.email,
+        telephone: formData.phone,
+        poste: formData.speciality,
+        competences: `${formData.skills} | Expérience: ${formData.experience} | TJM: ${formData.tjm} | Entreprise: ${formData.currentCompany} | Disponibilité: ${formData.availability} | LinkedIn: ${formData.linkedin} | Message: ${formData.message}`
+      };
+
+      // Appel à notre nouvelle API
+      const uploadFormData = new FormData();
+      uploadFormData.append('cv', formData.cvFile);
+      uploadFormData.append('consultantData', JSON.stringify(consultantData));
+
+      const response = await fetch('/api/consultants/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de l\'envoi de la candidature');
+      }
+
+      setUploadResult({
+        success: true,
+        message: '🎉 Candidature envoyée avec succès ! Nous étudierons votre profil sous 48h.',
+        details: result
+      });
+
+      // Réinitialisation du formulaire
       setFormData({
         name: '', email: '', phone: '', speciality: '', experience: '', skills: '', 
         linkedin: '', currentCompany: '', tjm: '', availability: '', message: '', cvFile: null
       });
+
+      // Réinitialisation du champ fichier
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) fileInput.value = '';
+
     } catch (error) {
-      alert('❌ Erreur lors de l envoi de la candidature.');
+      setUploadResult({
+        success: false,
+        message: `❌ ${error.message}`
+      });
     } finally {
       setUploading(false);
     }
   };
 
-  // 🛠️ SPÉCIALITÉS COMPLÈTES IT 2025
+  // 🛠️ SPÉCIALITÉS COMPLÈTES IT 2025 (identique)
   const specialites = [
     "Développement / Logiciel",
     "Développeur Front-End",
@@ -156,6 +209,23 @@ export default function Inscription() {
           <div style={{ background: 'white', padding: '50px', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
             <h2 style={{ textAlign: 'center', color: '#1a365d', marginBottom: '40px', fontSize: '2.2rem' }}>📝 Formulaire de Candidature</h2>
             
+            {/* Message de résultat */}
+            {uploadResult && (
+              <div style={{
+                padding: '15px',
+                marginBottom: '30px',
+                borderRadius: '8px',
+                backgroundColor: uploadResult.success ? '#d4edda' : '#f8d7da',
+                border: `1px solid ${uploadResult.success ? '#c3e6cb' : '#f5c6cb'}`,
+                color: uploadResult.success ? '#155724' : '#721c24'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
+                  {uploadResult.success ? '✅ Succès' : '❌ Erreur'}
+                </div>
+                {uploadResult.message}
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '30px' }}>
                 <h3 style={{ color: '#1a365d', marginBottom: '20px', borderBottom: '2px solid #fd7e14', paddingBottom: '10px' }}>👤 Informations Personnelles</h3>
@@ -251,8 +321,16 @@ export default function Inscription() {
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a365d' }}>CV (PDF) *</label>
-                  <input type="file" name="cvFile" onChange={handleFileChange} accept=".pdf,.doc,.docx" required style={{ width: '100%', padding: '12px 15px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '16px' }} />
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#1a365d' }}>CV (PDF uniquement) *</label>
+                  <input 
+                    type="file" 
+                    name="cvFile" 
+                    onChange={handleFileChange} 
+                    accept=".pdf" 
+                    required 
+                    style={{ width: '100%', padding: '12px 15px', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '16px' }} 
+                  />
+                  <small style={{ color: '#6b7280', fontSize: '12px' }}>Format PDF uniquement, maximum 10MB</small>
                 </div>
 
                 <div style={{ marginBottom: '30px' }}>
@@ -261,7 +339,24 @@ export default function Inscription() {
                 </div>
               </div>
 
-              <button type="submit" disabled={uploading} style={{ width: '100%', background: uploading ? '#9ca3af' : 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)', color: 'white', padding: '15px', border: 'none', borderRadius: '8px', fontSize: '18px', fontWeight: '600', cursor: uploading ? 'not-allowed' : 'pointer', transition: 'all 0.3s ease' }} onMouseEnter={(e) => { if (!uploading) e.target.style.transform = 'translateY(-2px)' }} onMouseLeave={(e) => { if (!uploading) e.target.style.transform = 'translateY(0)' }}>
+              <button 
+                type="submit" 
+                disabled={uploading} 
+                style={{ 
+                  width: '100%', 
+                  background: uploading ? '#9ca3af' : 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)', 
+                  color: 'white', 
+                  padding: '15px', 
+                  border: 'none', 
+                  borderRadius: '8px', 
+                  fontSize: '18px', 
+                  fontWeight: '600', 
+                  cursor: uploading ? 'not-allowed' : 'pointer', 
+                  transition: 'all 0.3s ease' 
+                }}
+                onMouseEnter={(e) => { if (!uploading) e.target.style.transform = 'translateY(-2px)' }} 
+                onMouseLeave={(e) => { if (!uploading) e.target.style.transform = 'translateY(0)' }}
+              >
                 {uploading ? '⏳ Envoi en cours...' : '🚀 Postuler maintenant'}
               </button>
             </form>

@@ -12,16 +12,52 @@ export default function Coaptation() {
     company: '',
     message: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Merci ! Nous vous recontacterons sous 24h pour activer votre compte coaptation.');
-    setFormData({ name: '', email: '', phone: '', company: '', message: '' });
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/coaptation/inscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prenom: formData.name.split(' ')[0] || formData.name,
+          nom: formData.name.split(' ').slice(1).join(' ') || formData.name,
+          email: formData.email,
+          telephone: formData.phone,
+          entreprise_actuelle: formData.company,
+          message: formData.message
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSuccess(true);
+        setMessage('Merci ! Nous vous recontacterons sous 24h pour activer votre compte coaptation.');
+        setFormData({ name: '', email: '', phone: '', company: '', message: '' });
+      } else {
+        setSuccess(false);
+        setMessage(result.error || "Erreur lors de l'envoi. Veuillez réessayer.");
+      }
+    } catch (error) {
+      setSuccess(false);
+      setMessage('Erreur de connexion. Veuillez réessayer.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,9 +82,9 @@ export default function Coaptation() {
       </header>
 
       {/* Hero Section */}
-      <section style={{ 
-        background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)', 
-        color: 'white', 
+      <section style={{
+        background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)',
+        color: 'white',
         padding: '80px 20px',
         textAlign: 'center'
       }}>
@@ -69,7 +105,7 @@ export default function Coaptation() {
           <h2 style={{ textAlign: 'center', fontSize: '2.5rem', color: '#1a365d', marginBottom: '60px' }}>
             🎯 Comment ça marche ?
           </h2>
-          
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}>
             <div style={{ textAlign: 'center', padding: '30px' }}>
               <div style={{ fontSize: '3rem', marginBottom: '20px' }}>👥</div>
@@ -98,7 +134,7 @@ export default function Coaptation() {
         </div>
       </section>
 
-      {/* Section Témoignages CORRIGÉS */}
+      {/* Section Témoignages */}
       <section style={{ padding: '80px 20px', background: '#f8fafc' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
           <h2 style={{ textAlign: 'center', fontSize: '2.5rem', color: '#1a365d', marginBottom: '60px' }}>
@@ -106,18 +142,18 @@ export default function Coaptation() {
           </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '40px' }}>
-            {/* Témoignage 1 CORRIGÉ */}
-            <div style={{ 
-              background: 'white', 
-              padding: '40px', 
-              borderRadius: '15px', 
+            {/* Témoignage 1 */}
+            <div style={{
+              background: 'white',
+              padding: '40px',
+              borderRadius: '15px',
               boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
               borderLeft: '4px solid #fd7e14'
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '20px' }}>👩‍💻</div>
-              <p style={{ 
-                fontSize: '1.1rem', 
-                lineHeight: '1.6', 
+              <p style={{
+                fontSize: '1.1rem',
+                lineHeight: '1.6',
                 color: '#4b5563',
                 fontStyle: 'italic',
                 marginBottom: '20px'
@@ -129,18 +165,18 @@ export default function Coaptation() {
               </div>
             </div>
 
-            {/* Témoignage 2 CORRIGÉ */}
-            <div style={{ 
-              background: 'white', 
-              padding: '40px', 
-              borderRadius: '15px', 
+            {/* Témoignage 2 */}
+            <div style={{
+              background: 'white',
+              padding: '40px',
+              borderRadius: '15px',
               boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
               borderLeft: '4px solid #3b82f6'
             }}>
               <div style={{ fontSize: '3rem', marginBottom: '20px' }}>👨‍💼</div>
-              <p style={{ 
-                fontSize: '1.1rem', 
-                lineHeight: '1.6', 
+              <p style={{
+                fontSize: '1.1rem',
+                lineHeight: '1.6',
                 color: '#4b5563',
                 fontStyle: 'italic',
                 marginBottom: '20px'
@@ -155,7 +191,7 @@ export default function Coaptation() {
         </div>
       </section>
 
-      {/* Section Calcul des Gains CORRIGÉE */}
+      {/* Section Calcul des Gains */}
       <section style={{ padding: '80px 20px', background: 'white' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
           <h2 style={{ textAlign: 'center', fontSize: '2.5rem', color: '#1a365d', marginBottom: '60px' }}>
@@ -163,19 +199,19 @@ export default function Coaptation() {
           </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
-            {/* Exemple 1 CORRIGÉ */}
-            <div style={{ 
-              background: 'linear-gradient(135deg, #fef3c7, #fbbf24)', 
-              padding: '30px', 
+            {/* Exemple 1 */}
+            <div style={{
+              background: 'linear-gradient(135deg, #fef3c7, #fbbf24)',
+              padding: '30px',
               borderRadius: '15px',
               textAlign: 'center'
             }}>
               <h3 style={{ color: '#1a365d', marginBottom: '15px' }}>🚀 Startup Fintech</h3>
               <p style={{ color: '#4b5563', marginBottom: '15px' }}><strong>50 employés</strong></p>
               <p style={{ color: '#4b5563', marginBottom: '10px' }}>Besoin : 2 développeurs React + 1 DevOps Engineer</p>
-              <div style={{ 
-                background: 'white', 
-                padding: '15px', 
+              <div style={{
+                background: 'white',
+                padding: '15px',
                 borderRadius: '10px',
                 marginTop: '15px'
               }}>
@@ -184,19 +220,19 @@ export default function Coaptation() {
               </div>
             </div>
 
-            {/* Exemple 2 CORRIGÉ */}
-            <div style={{ 
-              background: 'linear-gradient(135deg, #c7d2fe, #6366f1)', 
-              padding: '30px', 
+            {/* Exemple 2 */}
+            <div style={{
+              background: 'linear-gradient(135deg, #c7d2fe, #6366f1)',
+              padding: '30px',
               borderRadius: '15px',
               textAlign: 'center'
             }}>
               <h3 style={{ color: '#1a365d', marginBottom: '15px' }}>🏢 PME E-commerce</h3>
               <p style={{ color: '#4b5563', marginBottom: '15px' }}><strong>150 employés</strong></p>
               <p style={{ color: '#4b5563', marginBottom: '10px' }}>Besoin : 1 Architecte Solution + 1 Data Engineer</p>
-              <div style={{ 
-                background: 'white', 
-                padding: '15px', 
+              <div style={{
+                background: 'white',
+                padding: '15px',
                 borderRadius: '10px',
                 marginTop: '15px'
               }}>
@@ -205,19 +241,19 @@ export default function Coaptation() {
               </div>
             </div>
 
-            {/* Exemple 3 CORRIGÉ */}
-            <div style={{ 
-              background: 'linear-gradient(135deg, #bbf7d0, #22c55e)', 
-              padding: '30px', 
+            {/* Exemple 3 */}
+            <div style={{
+              background: 'linear-gradient(135deg, #bbf7d0, #22c55e)',
+              padding: '30px',
               borderRadius: '15px',
               textAlign: 'center'
             }}>
               <h3 style={{ color: '#1a365d', marginBottom: '15px' }}>🏛️ Grand Groupe</h3>
               <p style={{ color: '#4b5563', marginBottom: '15px' }}><strong>5000+ employés</strong></p>
               <p style={{ color: '#4b5563', marginBottom: '10px' }}>Besoin : Équipe complète de 8 développeurs</p>
-              <div style={{ 
-                background: 'white', 
-                padding: '15px', 
+              <div style={{
+                background: 'white',
+                padding: '15px',
                 borderRadius: '10px',
                 marginTop: '15px'
               }}>
@@ -229,17 +265,17 @@ export default function Coaptation() {
         </div>
       </section>
 
-      {/* Section Calcul Gains Potentiels CORRIGÉE */}
+      {/* Section Calcul Gains Potentiels */}
       <section style={{ padding: '80px 20px', background: '#f8fafc' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '2.5rem', color: '#1a365d', marginBottom: '40px' }}>
             🧮 Calculez vos gains potentiels
           </h2>
-          
-          <div style={{ 
-            background: 'white', 
-            padding: '40px', 
-            borderRadius: '15px', 
+
+          <div style={{
+            background: 'white',
+            padding: '40px',
+            borderRadius: '15px',
             boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
             marginBottom: '40px'
           }}>
@@ -276,10 +312,10 @@ export default function Coaptation() {
       {/* Formulaire d'inscription */}
       <section style={{ padding: '80px 20px', background: 'white' }}>
         <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          <div style={{ 
-            background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)', 
+          <div style={{
+            background: 'linear-gradient(135deg, #1a365d 0%, #2d3748 100%)',
             color: 'white',
-            padding: '50px', 
+            padding: '50px',
             borderRadius: '15px',
             textAlign: 'center'
           }}>
@@ -287,6 +323,20 @@ export default function Coaptation() {
             <p style={{ fontSize: '1.1rem', opacity: 0.9, marginBottom: '40px' }}>
               Rejoignez notre programme et commencez à générer des revenus passifs dès maintenant.
             </p>
+
+            {/* Message de statut */}
+            {message && (
+              <div style={{
+                background: success ? '#f0fdf4' : '#fef2f2',
+                color: success ? '#166534' : '#dc2626',
+                padding: '1rem',
+                borderRadius: '8px',
+                marginBottom: '1.5rem',
+                border: '1px solid ' + (success ? '#bbf7d0' : '#fecaca')
+              }}>
+                {message}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '20px' }}>
@@ -297,12 +347,14 @@ export default function Coaptation() {
                   onChange={handleInputChange}
                   placeholder="Votre nom complet"
                   required
+                  disabled={loading}
                   style={{
                     width: '100%',
                     padding: '15px',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    opacity: loading ? 0.7 : 1
                   }}
                 />
               </div>
@@ -315,12 +367,14 @@ export default function Coaptation() {
                   onChange={handleInputChange}
                   placeholder="Votre email"
                   required
+                  disabled={loading}
                   style={{
                     width: '100%',
                     padding: '15px',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    opacity: loading ? 0.7 : 1
                   }}
                 />
               </div>
@@ -332,12 +386,14 @@ export default function Coaptation() {
                   value={formData.phone}
                   onChange={handleInputChange}
                   placeholder="Votre téléphone"
+                  disabled={loading}
                   style={{
                     width: '100%',
                     padding: '15px',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    opacity: loading ? 0.7 : 1
                   }}
                 />
               </div>
@@ -349,34 +405,38 @@ export default function Coaptation() {
                   value={formData.company}
                   onChange={handleInputChange}
                   placeholder="Votre entreprise actuelle (optionnel)"
+                  disabled={loading}
                   style={{
                     width: '100%',
                     padding: '15px',
                     border: 'none',
                     borderRadius: '8px',
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    opacity: loading ? 0.7 : 1
                   }}
                 />
               </div>
 
               <button
                 type="submit"
+                disabled={loading}
                 style={{
                   width: '100%',
-                  background: 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
+                  background: loading ? '#9ca3af' : 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
                   color: 'white',
                   padding: '18px',
                   border: 'none',
-                    borderRadius: '8px',
+                  borderRadius: '8px',
                   fontSize: '18px',
                   fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s ease',
+                  opacity: loading ? 0.7 : 1
                 }}
-                onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-                onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                onMouseOver={(e) => { if (!loading) e.target.style.transform = 'translateY(-2px)' }}
+                onMouseOut={(e) => { if (!loading) e.target.style.transform = 'translateY(0)' }}
               >
-                💰 Devenir Coaptant
+                {loading ? '⏳ Envoi en cours...' : '💰 Devenir Coaptant'}
               </button>
             </form>
           </div>

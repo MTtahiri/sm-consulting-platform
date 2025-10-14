@@ -14,20 +14,65 @@ export default function InscriptionRecruteur() {
     hiringNeeds: '',
     message: ''
   });
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Merci pour votre inscription ! Nous vous recontacterons sous 24h.');
-    setFormData({
-      company: '', name: '', email: '', phone: '', 
-      position: '', hiringNeeds: '', message: ''
-    });
+    setUploading(true);
+    setResult(null);
+
+    try {
+      const response = await fetch('/api/recruteurs/inscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const resultData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resultData.error || 'Erreur lors de l\'inscription');
+      }
+
+      setResult({
+        success: true,
+        message: '🎉 Merci pour votre inscription ! Nous vous recontacterons sous 24h.'
+      });
+
+      // Réinitialisation du formulaire
+      setFormData({
+        company: '', name: '', email: '', phone: '', 
+        position: '', hiringNeeds: '', message: ''
+      });
+
+    } catch (error) {
+      setResult({
+        success: false,
+        message: `❌ ${error.message}`
+      });
+    } finally {
+      setUploading(false);
+    }
   };
+
+  // OPTIONS CORRESPONDANT EXACTEMENT À AIRTABLE
+  const hiringOptions = [
+    "Développeurs",
+    "Data Scientists/Engineers", 
+    "DevOps/Cloud",
+    "Cybersécurité",
+    "Product Managers",
+    "Équipe multidisciplinaire",
+    "Autre"
+  ];
 
   return (
     <>
@@ -54,7 +99,6 @@ export default function InscriptionRecruteur() {
           alignItems: 'center' 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {/* BOUTON RETOUR */}
             <Link href="/" style={{ 
               textDecoration: 'none', 
               color: '#fd7e14',
@@ -110,6 +154,23 @@ export default function InscriptionRecruteur() {
             }}>
               📋 Formulaire d'Inscription
             </h2>
+            
+            {/* Message de résultat */}
+            {result && (
+              <div style={{
+                padding: '15px',
+                marginBottom: '30px',
+                borderRadius: '8px',
+                backgroundColor: result.success ? '#d4edda' : '#f8d7da',
+                border: `1px solid ${result.success ? '#c3e6cb' : '#f5c6cb'}`,
+                color: result.success ? '#155724' : '#721c24'
+              }}>
+                <div style={{ fontWeight: 'bold' }}>
+                  {result.success ? '✅ Succès' : '❌ Erreur'}
+                </div>
+                {result.message}
+              </div>
+            )}
             
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '25px' }}>
@@ -238,12 +299,9 @@ export default function InscriptionRecruteur() {
                   }}
                 >
                   <option value="">Sélectionnez vos besoins</option>
-                  <option value="developers">Développeurs</option>
-                  <option value="data">Data Scientists/Engineers</option>
-                  <option value="devops">DevOps/Cloud</option>
-                  <option value="cyber">Cybersécurité</option>
-                  <option value="product">Product Managers</option>
-                  <option value="multiple">Équipe multidisciplinaire</option>
+                  {hiringOptions.map((option, index) => (
+                    <option key={index} value={option}>{option}</option>
+                  ))}
                 </select>
               </div>
 
@@ -270,33 +328,31 @@ export default function InscriptionRecruteur() {
 
               <button
                 type="submit"
+                disabled={uploading}
                 style={{
                   width: '100%',
-                  background: 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
+                  background: uploading ? '#9ca3af' : 'linear-gradient(135deg, #fd7e14 0%, #e67e22 100%)',
                   color: 'white',
                   padding: '15px',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '18px',
                   fontWeight: '600',
-                  cursor: 'pointer',
+                  cursor: uploading ? 'not-allowed' : 'pointer',
                   transition: 'all 0.3s ease'
                 }}
-                onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-                onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                onMouseOver={(e) => { if (!uploading) e.target.style.transform = 'translateY(-2px)' }}
+                onMouseOut={(e) => { if (!uploading) e.target.style.transform = 'translateY(0)' }}
               >
-                🚀 Devenir Recruteur Partenaire
+                {uploading ? '⏳ Envoi en cours...' : '🚀 Devenir Recruteur Partenaire'}
               </button>
             </form>
           </div>
         </div>
       </section>
 
-      {/* Footer et ScrollToTop Orange */}
       <Footer />
       <ScrollToTopOrange />
     </>
   );
 }
-
-

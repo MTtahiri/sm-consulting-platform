@@ -1,4 +1,4 @@
-// pages/contact.js - CODE CORRECT POUR LA PAGE CONTACT
+// pages/contact.js - VERSION COMPLÈTE AVEC AIRTABLE
 import Layout from '../components/Layout';
 import { useState } from 'react';
 
@@ -9,25 +9,42 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitMessage('');
     
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/contacts/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          nom: formData.nom,
+          email: formData.email,
+          telephone: formData.telephone,
+          company: '', // Pas de champ entreprise dans ce formulaire
+          sujet: formData.sujet,
+          message: formData.message,
+          source: 'page_contact'
+        })
       });
-      
-      if (response.ok) {
-        setSubmitMessage('✅ Message envoyé avec succès !');
-        setFormData({ nom: '', email: '', telephone: '', sujet: '', message: '' });
-      } else {
-        setSubmitMessage('❌ Erreur lors de l\'envoi. Réessayez.');
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erreur lors de l\'envoi');
       }
+
+      setSubmitMessage('✅ Message envoyé avec succès ! Nous vous recontacterons rapidement.');
+      setFormData({ nom: '', email: '', telephone: '', sujet: '', message: '' });
+
     } catch (error) {
-      setSubmitMessage('❌ Erreur de connexion.');
+      setSubmitMessage(`❌ ${error.message}`);
     }
     
     setIsSubmitting(false);
@@ -76,9 +93,10 @@ export default function Contact() {
                   </label>
                   <input
                     type="text"
+                    name="nom"
                     required
                     value={formData.nom}
-                    onChange={(e) => setFormData({...formData, nom: e.target.value})}
+                    onChange={handleInputChange}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -95,9 +113,10 @@ export default function Contact() {
                   </label>
                   <input
                     type="email"
+                    name="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={handleInputChange}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -114,8 +133,9 @@ export default function Contact() {
                   </label>
                   <input
                     type="tel"
+                    name="telephone"
                     value={formData.telephone}
-                    onChange={(e) => setFormData({...formData, telephone: e.target.value})}
+                    onChange={handleInputChange}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -131,9 +151,10 @@ export default function Contact() {
                     Sujet *
                   </label>
                   <select
+                    name="sujet"
                     required
                     value={formData.sujet}
-                    onChange={(e) => setFormData({...formData, sujet: e.target.value})}
+                    onChange={handleInputChange}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -156,10 +177,11 @@ export default function Contact() {
                     Message *
                   </label>
                   <textarea
+                    name="message"
                     required
                     rows="6"
                     value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    onChange={handleInputChange}
                     placeholder="Décrivez votre projet ou votre besoin..."
                     style={{
                       width: '100%',

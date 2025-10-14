@@ -1,7 +1,9 @@
-// pages/api/consultants/upload.js - VERSION AMÉLIORÉE
-import { connectToDatabase } from '../../../lib/mongodb';
-import { IncomingForm } from 'formidable';
-import fs from 'fs';
+﻿// pages/api/consultants/upload.js - VERSION WINDOWS
+import Airtable from "airtable";
+import { IncomingForm } from "formidable";
+import fs from "fs";
+import os from "os";
+import path from "path";
 
 export const config = {
   api: {
@@ -10,84 +12,74 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { db } = await connectToDatabase();
+    // Chemin temporaire correct pour Windows
+    const tmpDir = os.tmpdir();
     
-    const form = new IncomingForm();
-    
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error parsing form' });
-      }
+    const form = new IncomingForm({
+      uploadDir: tmpDir,
+      keepExtensions: true,
+      maxFileSize: 10 * 1024 * 1024,
+    });
 
-      const cvFile = files.cv?.[0];
-      const nom = fields.nom?.[0];
-      const prenom = fields.prenom?.[0];
-      const specialite = fields.specialite?.[0];
-      const poste = fields.poste?.[0];
-
-      if (!cvFile || !nom || !prenom || !specialite || !poste) {
-        return res.status(400).json({ error: 'Champs requis manquants' });
-      }
-
-      // Lire le fichier
-      const fileBuffer = fs.readFileSync(cvFile.filepath);
-      
-      const consultant = {
-        personal: {
-          nom: nom,
-          prenom: prenom,
-          email: fields.email?.[0] || '',
-          telephone: fields.telephone?.[0] || ''
-        },
-        professional: {
-          specialite: specialite,
-          poste_recherche: poste,
-          annees_experience: parseInt(fields.annees_experience?.[0]) || 0,
-          tjm: parseInt(fields.tjm?.[0]) || 0,
-          disponibilite: fields.disponibilite?.[0] || 'Immédiate',
-          mobilite: 'Paris, Remote' // Par défaut
-        },
-        recruitment: {
-          statut: 'nouveau',
-          source: 'upload_direct',
-          reference_offre: fields.reference_offre?.[0] || '',
-          notes: ''
-        },
-        cv: {
-          file_name: cvFile.originalFilename || 'cv.pdf',
-          file_size: cvFile.size,
-          file_type: cvFile.mimetype,
-          file_data: fileBuffer,
-          uploaded_at: new Date()
-        },
-        metadata: {
-          created_at: new Date(),
-          updated_at: new Date()
-        }
-      };
-
-      const result = await db.collection('consultants').insertOne(consultant);
-      
-      // Nettoyer le fichier temporaire
-      fs.unlinkSync(cvFile.filepath);
-
-      res.status(200).json({
-        success: true,
-        consultantId: result.insertedId,
-        message: 'CV uploadé avec succès'
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        resolve([fields, files]);
       });
     });
 
+    const cvFile = files.cv?.[0];
+    if (!cvFile) {
+      return res.status(400).json({ error: "No CV file provided" });
+    }
+
+    // Parser les données du consultant
+    const consultantData = JSON.parse(fields.consultantData?.[0] || "{}");
+
+    // Initialiser Airtable
+    const base = new Airtable({ 
+      apiKey: process.env.AIRTABLE_API_KEY 
+    }).base(process.env.AIRTABLE_BASE_ID);
+
+    // Préparer les données pour Airtable
+    const recordData = {
+      "prenom": consultantData.prenom || "",
+      "nom": consultantData.nom || "",
+      "email": consultantData.email || "",
+      "telephone": consultantData.telephone || "",
+      "poste": consultantData.poste || "",
+      "competences": consultantData.competences || "",
+      "cv_file_path": cvFile.originalFilename || "cv_uploaded.pdf",
+      "statut": "Nouveau"
+    };
+
+    const records = await base("Table 1").create([
+      { fields: recordData }
+    ]);
+
+    // Nettoyer le fichier temporaire
+    if (fs.existsSync(cvFile.filepath)) {
+      await fs.promises.unlink(cvFile.filepath);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Candidature enregistree avec succes dans Airtable!",
+      recordId: records[0].getId(),
+      candidate: recordData.prenom + " " + recordData.nom
+    });
+
   } catch (error) {
-    console.error('Upload error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
+    console.error("Erreur upload consultant:", error);
+    res.status(500).json({
+      success: false,
+      error: "Erreur lors de lenregistrement",
+      details: error.message
     });
   }
 }

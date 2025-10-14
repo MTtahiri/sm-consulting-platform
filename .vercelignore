@@ -1,5 +1,5 @@
-.git/
-*.log
-.DS_Store
-cv-uploads/
-temp/
+# Ignorer les dossiers problématiques lors du déploiement
+pages/api/backup/
+pages/api/consultants/
+lib/temp/
+*.backup.js

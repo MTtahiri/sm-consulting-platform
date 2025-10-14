@@ -1,0 +1,19 @@
+{
+  "name": "sm-consulting-external-sync",
+  "version": "1.0.0",
+  "description": "Serveur externe de synchronisation CV Drive → Sheets",
+  "main": "external-sync-server.js",
+  "scripts": {
+    "start": "node external-sync-server.js",
+    "dev": "nodemon external-sync-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "googleapis": "^126.0.1",
+    "google-spreadsheet": "^4.1.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

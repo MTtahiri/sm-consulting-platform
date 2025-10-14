@@ -1,0 +1,5 @@
+titre,entreprise,localisation,type_contrat,salaire,description,competences_requises
+"Développeur React Senior","SM Consulting","Paris","CDI","55K-65K€","Développement d'applications React modernes avec TypeScript","React,TypeScript,JavaScript,HTML5,CSS3"
+"DevOps Engineer","TechCorp","Remote","Freelance","550-650€/jour","Gestion infrastructure cloud et CI/CD","AWS,Docker,Kubernetes,Terraform"
+"Data Scientist","DataLab","Lyon","CDI","45K-55K€","Analyse de données et machine learning","Python,Pandas,Scikit-learn,SQL"
+"Product Manager","StartUpX","Toulouse","CDI","50K-60K€","Gestion de produit et roadmap","Product Management,Agile,Analytics"

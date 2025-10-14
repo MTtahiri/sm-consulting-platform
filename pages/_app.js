@@ -1,18 +1,5 @@
-import '../styles/globals.css';
-import Header from '../components/Header';
+import '../styles/globals.css'
 
-export default function MyApp({ Component, pageProps }) {
-  return (
-    <>
-      <Header />
-      {/* CONTENEUR PRINCIPAL AVEC PADDING POUR HEADER FIXE */}
-      <div style={{ 
-        paddingTop: '80px', 
-        minHeight: '100vh',
-        background: '#ffffff' // Fond blanc
-      }}>
-        <Component {...pageProps} />
-      </div>
-    </>
-  );
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />
 }
